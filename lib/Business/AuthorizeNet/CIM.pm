@@ -2,6 +2,8 @@ package Business::AuthorizeNet::CIM;
 
 # ABSTRACT: Authorize.Net CIM
 
+use strict;
+use warnings;
 use Carp qw/croak/;
 use LWP::UserAgent;
 use XML::Writer;
