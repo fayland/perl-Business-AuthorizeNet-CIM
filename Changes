@@ -1,34 +1,4 @@
-Revision history for Perl extension Dist-Zilla-Plugin-Repository
+Revision history for Perl extension Business-AuthorizeNet-CIM
 
-0.14    2010.09.01
-        make repository attr, lazy, changeable (Sawyer X)
-
-0.13    2010.05.19
-        bare minimum change for META 2 generation (rjbs)
-
-0.12    2010.05.03
-        make filtering github urls to http configurable (doy)
-
-0.11    2009.09.26
-        fix POD
-
-0.10    2009.09.26
-        git_remote attribute (madsen)
-
-0.09    2009.08.10
-        Change private googlecode repository url to the public one (Moritz Onken)
-
-0.08    2009.05.14
-        Added Mercurial support From Module-Install-Repository-0.05
-
-0.07    2009.05.13
-        fix use of git-remote show to work offline (rjbs)
-
-0.06    2009.05.11
-        fix version, fix authors
-
-0.02    2009.04.21
-        use http instead of git for github.com
-
-0.01    2009.04.20
+0.01_01 2010.9.11    
         a start
