@@ -1,4 +1,7 @@
 Revision history for Perl extension Business-AuthorizeNet-CIM
 
+0.02    2010.9.12
+        POD SYNOPSIS fixes
+
 0.01    2010.9.12
         a start

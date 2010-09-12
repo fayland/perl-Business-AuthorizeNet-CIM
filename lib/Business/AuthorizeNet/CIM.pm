@@ -15,10 +15,9 @@ use XML::Simple 'XMLin';
     use Data::Dumper;
     
     my $cim = Business::AuthorizeNet::CIM->new( login => $cfg{login}, transactionKey => $cfg{password} );
-    my $d = $cim->getCustomerProfileIds();
-    my $id_num = $d->{ids}->{numericString};
-    my @ids = ref($id_num) eq 'ARRAY' ? @$id_num : ($id_num);
-    foreach my $id (@ids) {
+
+    my @ProfileIds = $cim->getCustomerProfileIds();
+    foreach my $id (@ProfileIds) {
         my $d = $cim->getCustomerProfile($id);
         print Dumper(\$d);
     }
