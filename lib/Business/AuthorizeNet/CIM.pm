@@ -24,7 +24,7 @@ use XML::Simple 'XMLin';
 
 =head1 DESCRIPTION
 
-Sample code for L<http://developer.authorize.net/api/cim/>
+Authorize.Net Customer Information Manager (CIM) Web Services API for L<http://developer.authorize.net/api/cim/>, read L<http://www.authorize.net/support/CIM_XML_guide.pdf> for more details.
 
 =head2 METHODS
 
