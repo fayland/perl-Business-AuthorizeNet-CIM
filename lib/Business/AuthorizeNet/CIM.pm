@@ -725,9 +725,6 @@ sub getCustomerProfileIds {
     $writer->dataElement('name', $self->{login});
     $writer->dataElement('transactionKey', $self->{transactionKey});
     $writer->endTag('merchantAuthentication');
-    if ($self->{test_mode}) {
-        $writer->dataElement('validationMode', 'testMode');
-    }
     $writer->endTag('getCustomerProfileIdsRequest');
 
     $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
@@ -762,9 +759,6 @@ sub getCustomerProfile {
     $writer->dataElement('transactionKey', $self->{transactionKey});
     $writer->endTag('merchantAuthentication');
     $writer->dataElement('customerProfileId', $customerProfileId);
-    if ($self->{test_mode}) {
-        $writer->dataElement('validationMode', 'testMode');
-    }
     $writer->endTag('getCustomerProfileRequest');
 
     $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;

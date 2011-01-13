@@ -1,5 +1,8 @@
 Revision history for Perl extension Business-AuthorizeNet-CIM
 
+0.03    2011.1.13
+        ...invalid child element 'validationMode'... in getCustomerProfileIds/getCustomerProfile (RT 64723 from Gordon Hunt)
+
 0.02    2010.9.12
         POD SYNOPSIS fixes
 
