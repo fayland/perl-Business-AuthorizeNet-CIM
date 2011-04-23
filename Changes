@@ -1,5 +1,9 @@
 Revision history for Perl extension Business-AuthorizeNet-CIM
 
+0.04    2011.4.23
+        remove test_mode in deleteCustomerProfile (RT 61975, thanks to Patrick)
+        typo fix in createCustomerPaymentProfileRequest and make cardCode real optional (RT 67428, thanks to Pawel)
+
 0.03    2011.1.13
         ...invalid child element 'validationMode'... in getCustomerProfileIds/getCustomerProfile (RT 64723 from Gordon Hunt)
 

@@ -184,7 +184,8 @@ sub createCustomerProfile {
     if (exists $args->{creditCard}) {
         $writer->startTag('creditCard');
         foreach my $k ('cardNumber', 'expirationDate', 'cardCode') {
-            $writer->dataElement($k, $args->{creditCard}->{$k});
+            $writer->dataElement($k, $args->{creditCard}->{$k})
+                if exists $args->{creditCard}->{$k};
         }
         $writer->endTag('creditCard');
     }
@@ -279,7 +280,7 @@ sub createCustomerPaymentProfileRequest {
     $writer->endTag('merchantAuthentication');
     $writer->dataElement('refId', $args->{refId}) if exists $args->{refId};
     $writer->dataElement('customerProfileId', $args->{customerProfileId});
-    $writer->startTag('paymentProfiles');
+    $writer->startTag('paymentProfile');
     $writer->dataElement('customerType', $args->{'customerType'}) if exists $args->{'customerType'};
     
     my @flds = ('firstName', 'lastName', 'company', 'address', 'city', 'state', 'zip', 'country', 'phoneNumber', 'faxNumber');
@@ -298,7 +299,8 @@ sub createCustomerPaymentProfileRequest {
     if (exists $args->{creditCard}) {
         $writer->startTag('creditCard');
         foreach my $k ('cardNumber', 'expirationDate', 'cardCode') {
-            $writer->dataElement($k, $args->{creditCard}->{$k});
+            $writer->dataElement($k, $args->{creditCard}->{$k})
+                if exists $args->{creditCard}->{$k};
         }
         $writer->endTag('creditCard');
     }
@@ -311,7 +313,7 @@ sub createCustomerPaymentProfileRequest {
     }
     
     $writer->endTag('payment');
-    $writer->endTag('paymentProfiles');
+    $writer->endTag('paymentProfile');
 
     if ($self->{test_mode}) {
         $writer->dataElement('validationMode', 'testMode');
@@ -619,9 +621,6 @@ sub deleteCustomerProfile {
     $writer->dataElement('transactionKey', $self->{transactionKey});
     $writer->endTag('merchantAuthentication');
     $writer->dataElement('customerProfileId', $customerProfileId);
-    if ($self->{test_mode}) {
-        $writer->dataElement('validationMode', 'testMode');
-    }
     $writer->endTag('deleteCustomerProfileRequest');
 
     $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
@@ -966,7 +965,8 @@ sub updateCustomerPaymentProfile {
     if (exists $args->{creditCard}) {
         $writer->startTag('creditCard');
         foreach my $k ('cardNumber', 'expirationDate', 'cardCode') {
-            $writer->dataElement($k, $args->{creditCard}->{$k});
+            $writer->dataElement($k, $args->{creditCard}->{$k})
+                if exists $args->{creditCard}->{$k};
         }
         $writer->endTag('creditCard');
     }
