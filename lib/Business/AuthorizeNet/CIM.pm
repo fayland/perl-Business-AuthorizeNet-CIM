@@ -732,6 +732,9 @@ sub getCustomerProfileIds {
     print "<!-- " . $resp->content . " -->\n\n" if $self->{debug};
 
     my $d = XMLin($resp->content, SuppressEmpty => '');
+
+    return () unless $d->{ids};
+
     my $id_num = $d->{ids}->{numericString};
     my @ids = ref($id_num) eq 'ARRAY' ? @$id_num
             : defined $id_num         ? ($id_num)
