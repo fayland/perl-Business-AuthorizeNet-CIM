@@ -733,7 +733,10 @@ sub getCustomerProfileIds {
 
     my $d = XMLin($resp->content, SuppressEmpty => '');
     my $id_num = $d->{ids}->{numericString};
-    my @ids = ref($id_num) eq 'ARRAY' ? @$id_num : ($id_num);
+    my @ids = ref($id_num) eq 'ARRAY' ? @$id_num
+            : defined $id_num         ? ($id_num)
+            :                           ();
+
     return @ids;
 }
 
