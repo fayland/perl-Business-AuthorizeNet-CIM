@@ -1,5 +1,11 @@
 Revision history for Perl extension Business-AuthorizeNet-CIM
 
+0.06    2011.12.24
+        bug fixes from rjbs
+
+0.05    2011.12.23
+        don't return (undef) from getCustomerProfileIds (rjbs)
+
 0.04    2011.4.23
         remove test_mode in deleteCustomerProfile (RT 61975, thanks to Patrick)
         typo fix in createCustomerPaymentProfileRequest and make cardCode real optional (RT 67428, thanks to Pawel)
