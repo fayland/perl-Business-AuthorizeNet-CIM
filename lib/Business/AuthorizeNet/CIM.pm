@@ -89,7 +89,8 @@ sub new {
 
 =head3 createCustomerProfile
 
-Create a new customer profile along with any customer payment profiles and customer shipping addresses for the customer profile.
+Create a new customer profile along with any customer payment profiles and
+customer shipping addresses for the customer profile.
 
     $cim->createCustomerProfile(
         refId => $refId, # Optional
@@ -100,6 +101,7 @@ Create a new customer profile along with any customer payment profiles and custo
         email => $email,
 
         customerType => $customerType, # Optional
+
         billTo => { # Optional, all sub items are Optional
             firstName => $firstName,
             lastName  => $lastName,
@@ -112,6 +114,7 @@ Create a new customer profile along with any customer payment profiles and custo
             phoneNumber => $phoneNumber,
             faxNumber => $faxNumber
         },
+
         # or it uses shipToList address as billTo
         use_shipToList_as_billTo => 1,
 
@@ -120,6 +123,7 @@ Create a new customer profile along with any customer payment profiles and custo
             expirationDate => $expirationDate, # YYYY-MM
             cardCode => $cardCode,  # Optional
         },
+
         bankAccount => { # required when the payment profile is bank account
             accountType => $accountType, # Optional, one of checking, savings, businessChecking
             routingNumber => $routingNumber,
@@ -144,9 +148,18 @@ Create a new customer profile along with any customer payment profiles and custo
 
         # or it uses billTo address as shipToList
         use_billTo_as_shipToList => 1,
+
     );
 
 =cut
+
+sub _need_payment_profiles_section {
+    my ($self, $args) = @_;
+    return exists $args->{billTo}
+        || exists $args->{creditCard}
+        || exists $args->{bankAccount}
+        || ( $args->{use_shipToList_as_billTo} and $args->{shipToList} );
+}
 
 sub createCustomerProfile {
     my $self = shift;
@@ -165,40 +178,48 @@ sub createCustomerProfile {
         $writer->dataElement($k, $args->{$k})
             if exists $args->{$k};
     }
-    $writer->startTag('paymentProfiles');
-    $writer->dataElement('customerType', $args->{'customerType'}) if exists $args->{'customerType'};
 
-    my @flds = ('firstName', 'lastName', 'company', 'address', 'city', 'state', 'zip', 'country', 'phoneNumber', 'faxNumber');
-    if (exists $args->{billTo} or ( $args->{use_shipToList_as_billTo} and $args->{shipToList} )) {
-        my $addr = exists $args->{billTo} ? $args->{billTo} : $args->{shipToList};
-        $writer->startTag('billTo');
-        foreach my $k (@flds) {
-            $writer->dataElement($k, $addr->{$k})
-                if exists $addr->{$k};
+    my @flds = qw(
+      firstName lastName company address city state zip country
+      phoneNumber faxNumber
+    );
+
+    my $need_payment_profiles = $self->_need_payment_profiles_section($args);
+    if ($need_payment_profiles) {
+        $writer->startTag('paymentProfiles');
+        $writer->dataElement('customerType', $args->{'customerType'}) if exists $args->{'customerType'};
+
+        if (exists $args->{billTo} or ( $args->{use_shipToList_as_billTo} and $args->{shipToList} )) {
+            my $addr = exists $args->{billTo} ? $args->{billTo} : $args->{shipToList};
+            $writer->startTag('billTo');
+            foreach my $k (@flds) {
+                $writer->dataElement($k, $addr->{$k})
+                    if exists $addr->{$k};
+            }
+            $writer->endTag('billTo');
         }
-        $writer->endTag('billTo');
-    }
 
-    $writer->startTag('payment');
+        $writer->startTag('payment');
 
-    if (exists $args->{creditCard}) {
-        $writer->startTag('creditCard');
-        foreach my $k ('cardNumber', 'expirationDate', 'cardCode') {
-            $writer->dataElement($k, $args->{creditCard}->{$k})
-                if exists $args->{creditCard}->{$k};
+        if (exists $args->{creditCard}) {
+            $writer->startTag('creditCard');
+            foreach my $k ('cardNumber', 'expirationDate', 'cardCode') {
+                $writer->dataElement($k, $args->{creditCard}->{$k})
+                    if exists $args->{creditCard}->{$k};
+            }
+            $writer->endTag('creditCard');
         }
-        $writer->endTag('creditCard');
-    }
-    if (exists $args->{bankAccount}) {
-        $writer->startTag('bankAccount');
-        foreach my $k ('accountType', 'routingNumber', 'accountNumber', 'nameOnAccount', 'echeckType', 'bankName') {
-            $writer->dataElement($k, $args->{bankAccount}->{$k});
+        if (exists $args->{bankAccount}) {
+            $writer->startTag('bankAccount');
+            foreach my $k ('accountType', 'routingNumber', 'accountNumber', 'nameOnAccount', 'echeckType', 'bankName') {
+                $writer->dataElement($k, $args->{bankAccount}->{$k});
+            }
+            $writer->endTag('bankAccount');
         }
-        $writer->endTag('bankAccount');
-    }
 
-    $writer->endTag('payment');
-    $writer->endTag('paymentProfiles');
+        $writer->endTag('payment');
+        $writer->endTag('paymentProfiles');
+    }
 
     if (exists $args->{shipToList} or ( $args->{use_billTo_as_shipToList} and $args->{billTo} )) {
         my $addr = exists $args->{shipToList} ? $args->{shipToList} : $args->{billTo};
@@ -211,7 +232,7 @@ sub createCustomerProfile {
     }
 
     $writer->endTag('profile');
-    if ($self->{test_mode}) {
+    if ($need_payment_profiles && $self->{test_mode}) {
         $writer->dataElement('validationMode', 'testMode');
     }
     $writer->endTag('createCustomerProfileRequest');
