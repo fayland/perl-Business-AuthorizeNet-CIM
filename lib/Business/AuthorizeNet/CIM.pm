@@ -10,10 +10,10 @@ use XML::Writer;
 use XML::Simple 'XMLin';
 
 =head1 SYNOPSIS
- 
+
     use Business::AuthorizeNet::CIM;
     use Data::Dumper;
-    
+
     my $cim = Business::AuthorizeNet::CIM->new( login => $cfg{login}, transactionKey => $cfg{password} );
 
     my @ProfileIds = $cim->getCustomerProfileIds();
@@ -66,11 +66,11 @@ L<LWP::UserAgent> or L<WWW::Mechanize> instance
 sub new {
     my $class = shift;
     my $args = scalar @_ % 2 ? shift : { @_ };
-    
+
     # validate
     $args->{login} or croak 'login is required';
     $args->{transactionKey} or croak 'transactionKey is required';
-    
+
     if ($args->{test_mode}) {
         $args->{url} = 'https://apitest.authorize.net/xml/v1/request.api';
     } else {
@@ -93,12 +93,12 @@ Create a new customer profile along with any customer payment profiles and custo
 
     $cim->createCustomerProfile(
         refId => $refId, # Optional
-        
+
         # one of 'merchantCustomerId', 'description', 'email' is required
         merchantCustomerId => $merchantCustomerId,
         description => $description,
         email => $email,
-        
+
         customerType => $customerType, # Optional
         billTo => { # Optional, all sub items are Optional
             firstName => $firstName,
@@ -114,7 +114,7 @@ Create a new customer profile along with any customer payment profiles and custo
         },
         # or it uses shipToList address as billTo
         use_shipToList_as_billTo => 1,
-        
+
         creditCard => { # required when the payment profile is credit card
             cardNumber => $cardNumber,
             expirationDate => $expirationDate, # YYYY-MM
@@ -128,7 +128,7 @@ Create a new customer profile along with any customer payment profiles and custo
             echeckType => $echeckType, # Optionaal, one of CCD, PPD, TEL, WEB
             bankName   => $bankName, # Optional
         },
-        
+
         shipToList => {
             firstName => $firstName,
             lastName  => $lastName,
@@ -141,7 +141,7 @@ Create a new customer profile along with any customer payment profiles and custo
             phoneNumber => $phoneNumber,
             faxNumber => $faxNumber
         },
-        
+
         # or it uses billTo address as shipToList
         use_billTo_as_shipToList => 1,
     );
@@ -167,7 +167,7 @@ sub createCustomerProfile {
     }
     $writer->startTag('paymentProfiles');
     $writer->dataElement('customerType', $args->{'customerType'}) if exists $args->{'customerType'};
-    
+
     my @flds = ('firstName', 'lastName', 'company', 'address', 'city', 'state', 'zip', 'country', 'phoneNumber', 'faxNumber');
     if (exists $args->{billTo} or ( $args->{use_shipToList_as_billTo} and $args->{shipToList} )) {
         my $addr = exists $args->{billTo} ? $args->{billTo} : $args->{shipToList};
@@ -178,9 +178,9 @@ sub createCustomerProfile {
         }
         $writer->endTag('billTo');
     }
-    
+
     $writer->startTag('payment');
-    
+
     if (exists $args->{creditCard}) {
         $writer->startTag('creditCard');
         foreach my $k ('cardNumber', 'expirationDate', 'cardCode') {
@@ -196,7 +196,7 @@ sub createCustomerProfile {
         }
         $writer->endTag('bankAccount');
     }
-    
+
     $writer->endTag('payment');
     $writer->endTag('paymentProfiles');
 
@@ -209,7 +209,7 @@ sub createCustomerProfile {
         }
         $writer->endTag('shipToList');
     }
-    
+
     $writer->endTag('profile');
     if ($self->{test_mode}) {
         $writer->dataElement('validationMode', 'testMode');
@@ -221,7 +221,7 @@ sub createCustomerProfile {
     my $resp = $self->{ua}->post($self->{url}, Content => $xml, 'Content-Type' => 'text/xml');
     print "<!-- " . $resp->content . " -->\n\n" if $self->{debug};
 
-    my $d = XMLin($resp->content, SuppressEmpty => '');    
+    my $d = XMLin($resp->content, SuppressEmpty => '');
     return $d;
 }
 
@@ -233,7 +233,7 @@ Create a new customer payment profile for an existing customer profile. You can 
 
     $cim->createCustomerPaymentProfileRequest(
         customerProfileId => $customerProfileId, # required
-    
+
         refId => $refId, # Optional
 
         customerType => $customerType, # Optional
@@ -249,7 +249,7 @@ Create a new customer payment profile for an existing customer profile. You can 
             phoneNumber => $phoneNumber,
             faxNumber => $faxNumber
         },
-        
+
         creditCard => { # required when the payment profile is credit card
             cardNumber => $cardNumber,
             expirationDate => $expirationDate, # YYYY-MM
@@ -282,7 +282,7 @@ sub createCustomerPaymentProfileRequest {
     $writer->dataElement('customerProfileId', $args->{customerProfileId});
     $writer->startTag('paymentProfile');
     $writer->dataElement('customerType', $args->{'customerType'}) if exists $args->{'customerType'};
-    
+
     my @flds = ('firstName', 'lastName', 'company', 'address', 'city', 'state', 'zip', 'country', 'phoneNumber', 'faxNumber');
     my $addr = exists $args->{billTo} ? $args->{billTo} : $args;
     if (grep { exists $addr->{$_} } @flds) {
@@ -293,9 +293,9 @@ sub createCustomerPaymentProfileRequest {
         }
         $writer->endTag('billTo');
     }
-    
+
     $writer->startTag('payment');
-    
+
     if (exists $args->{creditCard}) {
         $writer->startTag('creditCard');
         foreach my $k ('cardNumber', 'expirationDate', 'cardCode') {
@@ -311,7 +311,7 @@ sub createCustomerPaymentProfileRequest {
         }
         $writer->endTag('bankAccount');
     }
-    
+
     $writer->endTag('payment');
     $writer->endTag('paymentProfile');
 
@@ -325,7 +325,7 @@ sub createCustomerPaymentProfileRequest {
     my $resp = $self->{ua}->post($self->{url}, Content => $xml, 'Content-Type' => 'text/xml');
     print "<!-- " . $resp->content . " -->\n\n" if $self->{debug};
 
-    my $d = XMLin($resp->content, SuppressEmpty => '');    
+    my $d = XMLin($resp->content, SuppressEmpty => '');
     return $d;
 }
 
@@ -337,9 +337,9 @@ Create a new customer shipping address for an existing customer profile. You can
 
     $cim->createCustomerShippingAddressRequest(
         customerProfileId => $customerProfileId, # required
-    
+
         refId => $refId, # Optional
-        
+
         firstName => $firstName,
         lastName  => $lastName,
         company   => $company,
@@ -351,7 +351,7 @@ Create a new customer shipping address for an existing customer profile. You can
         phoneNumber => $phoneNumber,
         faxNumber => $faxNumber
     );
-    
+
 =cut
 
 sub createCustomerShippingAddressRequest {
@@ -368,7 +368,7 @@ sub createCustomerShippingAddressRequest {
     $writer->dataElement('refId', $args->{refId}) if exists $args->{refId};
     $writer->dataElement('customerProfileId', $args->{customerProfileId});
     $writer->startTag('address');
-    
+
     my @flds = ('firstName', 'lastName', 'company', 'address', 'city', 'state', 'zip', 'country', 'phoneNumber', 'faxNumber');
     my $addr = exists $args->{shipToList} ? $args->{shipToList} : $args;
     foreach my $k (@flds) {
@@ -388,7 +388,7 @@ sub createCustomerShippingAddressRequest {
     my $resp = $self->{ua}->post($self->{url}, Content => $xml, 'Content-Type' => 'text/xml');
     print "<!-- " . $resp->content . " -->\n\n" if $self->{debug};
 
-    my $d = XMLin($resp->content, SuppressEmpty => '');    
+    my $d = XMLin($resp->content, SuppressEmpty => '');
     return $d;
 }
 
@@ -402,7 +402,7 @@ Create a new payment transaction from an existing customer profile.
         'profileTransAuthCapture', # or others like profileTransAuthOnly
 
         refId => $refId, # Optional, reference id
-        
+
         amount => $amount,
         tax => { # Optional
             amount => $tax_amount,
@@ -419,7 +419,7 @@ Create a new payment transaction from an existing customer profile.
             name   => $tax_name,
             description => $tax_description
         },
-        
+
         lineItems => [ { # Optional
             itemId => $itemId,
             name => $name,
@@ -428,23 +428,23 @@ Create a new payment transaction from an existing customer profile.
             unitPrice => $unitPrice,
             taxable => $taxable,
         } ],
-    
+
         customerProfileId => $customerProfileId,
         customerPaymentProfileId => $customerPaymentProfileId,
         customerShippingAddressId => $customerShippingAddressId,
-        
+
         extraOptions => $extraOptions, # Optional
-        
+
         ### Only required for profileTransPriorAuthCapture: For Prior Authorization and CaptureTransactions
         ### and profileTransRefund: For Refund Transactions
         ### and profileTransVoid: For Void Transactions
         transId => $transId,
-        
+
         ### Only partly required for profileTransRefund: For Refund Transactions
         creditCardNumberMasked => $creditCardNumberMasked,
         bankRoutingNumberMasked => $bankRoutingNumberMasked,
         bankAccountNumberMasked => $bankAccountNumberMasked,
-        
+
         ### rest are not for profileTransPriorAuthCapture
         order => { # Optional
             invoiceNumber => $invoiceNumber,
@@ -455,12 +455,12 @@ Create a new payment transaction from an existing customer profile.
         recurringBilling => 'false', # optional
         cardCode => $cardCode, # Required only when the merchant would like to use the Card Code Verification (CCV) filter
         splitTenderId => $splitTenderId, # Required for second and subsequent transactions related to a partial authorizaqtion transaction.
-        
+
         #### ONLY required for profileTransCaptureOnly: the Capture Only transaction type.
         approvalCode => $approvalCode,
     );
 
-The first argument can be one of 
+The first argument can be one of
 
 =over 4
 
@@ -492,11 +492,11 @@ For Void Transactions
         'profileTransVoid', # or others like profileTransAuthOnly
 
         refId => $refId, # Optional, reference id
-        
+
         customerProfileId => $customerProfileId,
         customerPaymentProfileId => $customerPaymentProfileId,
         customerShippingAddressId => $customerShippingAddressId,
-        
+
         extraOptions => $extraOptions, # Optional
 
         transId => $transId,
@@ -510,7 +510,7 @@ sub createCustomerProfileTransaction {
     my $self = shift;
     my $trans_type = shift;
     my $args = scalar @_ % 2 ? shift : { @_ };
-    
+
     my $xml;
     my $writer = XML::Writer->new(OUTPUT => \$xml);
     $writer->startTag('createCustomerProfileTransactionRequest', 'xmlns' => 'AnetApi/xml/v1/schema/AnetApiSchema.xsd');
@@ -522,7 +522,7 @@ sub createCustomerProfileTransaction {
     $writer->startTag('transaction');
     $writer->startTag($trans_type); # profileTransAuthOnly, profileTransPriorAuthCapture etc
     $writer->dataElement('amount', $args->{amount});
-    
+
     foreach my $type ('tax', 'shipping', 'duty') {
         next unless exists $args->{$type};
         $writer->startTag($type);
@@ -532,7 +532,7 @@ sub createCustomerProfileTransaction {
         }
         $writer->endTag($type);
     }
-    
+
     # lineItems
     if (exists $args->{lineItems}) {
         my @lineItems = (ref($args->{lineItems}) eq 'ARRAY') ? @{$args->{lineItems}} : ($args->{lineItems});
@@ -545,19 +545,19 @@ sub createCustomerProfileTransaction {
         }
         $writer->endTag('lineItems');
     }
-    
+
     $writer->dataElement('customerProfileId', $args->{customerProfileId});
     $writer->dataElement('customerPaymentProfileId', $args->{customerPaymentProfileId});
     $writer->dataElement('customerShippingAddressId', $args->{customerShippingAddressId})
         if $args->{customerShippingAddressId};
-    
+
     if ($trans_type eq 'profileTransRefund') {
         foreach my $k ('creditCardNumberMasked', 'bankRoutingNumberMasked', 'bankAccountNumberMasked') {
             $writer->dataElement($k, $args->{$k})
                 if exists $args->{$k};
         }
     }
-    
+
     # order
     if (exists $args->{order}) {
         $writer->startTag('order');
@@ -570,7 +570,7 @@ sub createCustomerProfileTransaction {
 
     $writer->dataElement('transId', $args->{transId})
         if ( exists $args->{transId} and ($trans_type eq 'profileTransPriorAuthCapture' or $trans_type eq 'profileTransRefund' or $trans_type eq 'profileTransVoid') );
-    
+
     $writer->dataElement('taxExempt', $args->{taxExempt})
         if exists $args->{taxExempt};
     $writer->dataElement('recurringBilling', $args->{recurringBilling})
@@ -580,13 +580,13 @@ sub createCustomerProfileTransaction {
         if exists $args->{splitTenderId};
     $writer->dataElement('approvalCode', $args->{approvalCode})
         if exists $args->{approvalCode} and $trans_type eq 'profileTransCaptureOnly';
-    
+
     $writer->endTag($trans_type);
     $writer->endTag('transaction');
-    
+
     $writer->dataElement('extraOptions', $args->{extraOptions})
         if exists $args->{extraOptions};
-    
+
     $writer->endTag('createCustomerProfileTransactionRequest');
 
     $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
@@ -595,7 +595,7 @@ sub createCustomerProfileTransaction {
     print "<!-- " . $resp->content . " -->\n\n" if $self->{debug};
 
     my $d = XMLin($resp->content, SuppressEmpty => '');
-    
+
     print "<!-- $xml -->\n\n" if $self->{debug};
     return $d;
 }
@@ -612,7 +612,7 @@ Delete an existing customer profile along with all associated customer payment p
 
 sub deleteCustomerProfile {
     my ($self, $customerProfileId) = @_;
-    
+
     my $xml;
     my $writer = XML::Writer->new(OUTPUT => \$xml);
     $writer->startTag('deleteCustomerProfileRequest', 'xmlns' => 'AnetApi/xml/v1/schema/AnetApiSchema.xsd');
@@ -644,7 +644,7 @@ Delete a customer payment profile from an existing customer profile.
 
 sub deleteCustomerPaymentProfileRequest {
     my ($self, $customerProfileId, $customerPaymentProfileId) = @_;
-    
+
     my $xml;
     my $writer = XML::Writer->new(OUTPUT => \$xml);
     $writer->startTag('deleteCustomerPaymentProfileRequest', 'xmlns' => 'AnetApi/xml/v1/schema/AnetApiSchema.xsd');
@@ -680,7 +680,7 @@ Delete a customer shipping address from an existing customer profile.
 
 sub deleteCustomerShippingAddressRequest {
     my ($self, $customerProfileId, $customerAddressId) = @_;
-    
+
     my $xml;
     my $writer = XML::Writer->new(OUTPUT => \$xml);
     $writer->startTag('deleteCustomerShippingAddressRequest', 'xmlns' => 'AnetApi/xml/v1/schema/AnetApiSchema.xsd');
@@ -755,7 +755,7 @@ Retrieve an existing customer profile along with all the associated customer pay
 
 sub getCustomerProfile {
     my ($self, $customerProfileId) = @_;
-    
+
     my $xml;
     my $writer = XML::Writer->new(OUTPUT => \$xml);
     $writer->startTag('getCustomerProfileRequest', 'xmlns' => 'AnetApi/xml/v1/schema/AnetApiSchema.xsd');
@@ -787,7 +787,7 @@ Retrieve a customer payment profile for an existing customer profile.
 
 sub getCustomerPaymentProfileRequest {
     my ($self, $customerProfileId, $customerPaymentProfileId) = @_;
-    
+
     my $xml;
     my $writer = XML::Writer->new(OUTPUT => \$xml);
     $writer->startTag('getCustomerPaymentProfileRequest', 'xmlns' => 'AnetApi/xml/v1/schema/AnetApiSchema.xsd');
@@ -823,7 +823,7 @@ Retrieve a customer shipping address for an existing customer profile.
 
 sub getCustomerShippingAddressRequest {
     my ($self, $customerProfileId, $customerAddressId) = @_;
-    
+
     my $xml;
     my $writer = XML::Writer->new(OUTPUT => \$xml);
     $writer->startTag('getCustomerShippingAddressRequest', 'xmlns' => 'AnetApi/xml/v1/schema/AnetApiSchema.xsd');
@@ -855,9 +855,9 @@ Update an existing customer profile
 
     $cim->updateCustomerProfile(
         customerProfileId => $customerProfileId,
-        
+
         refId => $refId, # Optional
-        
+
         merchantCustomerId => $merchantCustomerId,
         description => $description,
         email => $email
@@ -868,7 +868,7 @@ Update an existing customer profile
 sub updateCustomerProfile {
     my $self = shift;
     my $args = scalar @_ % 2 ? shift : { @_ };
-    
+
     my $xml;
     my $writer = XML::Writer->new(OUTPUT => \$xml);
     $writer->startTag('updateCustomerProfileRequest', 'xmlns' => 'AnetApi/xml/v1/schema/AnetApiSchema.xsd');
@@ -904,9 +904,9 @@ Update a customer payment profile for an existing customer profile.
     $cim->updateCustomerPaymentProfile(
         customerProfileId => $customerProfileId,
         customerPaymentProfileId => $customerPaymentProfileId,
-        
+
         refId => $refId, # Optional
-        
+
         customerType => $customerType, # Optional
         billTo => { # Optional, all sub items are Optional
             firstName => $firstName,
@@ -920,7 +920,7 @@ Update a customer payment profile for an existing customer profile.
             phoneNumber => $phoneNumber,
             faxNumber => $faxNumber
         },
-        
+
         creditCard => { # required when the payment profile is credit card
             cardNumber => $cardNumber,
             expirationDate => $expirationDate, # YYYY-MM
@@ -941,7 +941,7 @@ Update a customer payment profile for an existing customer profile.
 sub updateCustomerPaymentProfile {
     my $self = shift;
     my $args = scalar @_ % 2 ? shift : { @_ };
-    
+
     my $xml;
     my $writer = XML::Writer->new(OUTPUT => \$xml);
     $writer->startTag('updateCustomerPaymentProfileRequest', 'xmlns' => 'AnetApi/xml/v1/schema/AnetApiSchema.xsd');
@@ -951,10 +951,10 @@ sub updateCustomerPaymentProfile {
     $writer->endTag('merchantAuthentication');
     $writer->dataElement('refId', $args->{refId}) if exists $args->{refId};
     $writer->dataElement('customerProfileId', $args->{customerProfileId});
-    
+
     $writer->startTag('paymentProfile');
     $writer->dataElement('customerType', $args->{'customerType'}) if exists $args->{'customerType'};
-    
+
     my @flds = ('firstName', 'lastName', 'company', 'address', 'city', 'state', 'zip', 'country', 'phoneNumber', 'faxNumber');
     my $addr = exists $args->{billTo} ? $args->{billTo} : $args;
     if (grep { exists $addr->{$_} } @flds) {
@@ -965,9 +965,9 @@ sub updateCustomerPaymentProfile {
         }
         $writer->endTag('billTo');
     }
-    
+
     $writer->startTag('payment');
-    
+
     if (exists $args->{creditCard}) {
         $writer->startTag('creditCard');
         foreach my $k ('cardNumber', 'expirationDate', 'cardCode') {
@@ -983,7 +983,7 @@ sub updateCustomerPaymentProfile {
         }
         $writer->endTag('bankAccount');
     }
-    
+
     $writer->endTag('payment');
     $writer->dataElement('customerPaymentProfileId', $args->{customerPaymentProfileId});
     $writer->endTag('paymentProfile');
@@ -1011,9 +1011,9 @@ Update a shipping address for an existing customer profile.
     $cim->updateCustomerShippingAddress(
         customerProfileId => $customerProfileId,
         customerAddressId => $customerAddressId,
-        
+
         refId => $refId, # Optional
-        
+
         firstName => $firstName,
         lastName  => $lastName,
         company   => $company,
@@ -1025,13 +1025,13 @@ Update a shipping address for an existing customer profile.
         phoneNumber => $phoneNumber,
         faxNumber => $faxNumber
     );
-        
+
 =cut
 
 sub updateCustomerShippingAddress {
     my $self = shift;
     my $args = scalar @_ % 2 ? shift : { @_ };
-    
+
     my $xml;
     my $writer = XML::Writer->new(OUTPUT => \$xml);
     $writer->startTag('updateCustomerShippingAddressRequest', 'xmlns' => 'AnetApi/xml/v1/schema/AnetApiSchema.xsd');
@@ -1043,7 +1043,7 @@ sub updateCustomerShippingAddress {
     $writer->dataElement('customerProfileId', $args->{customerProfileId})
         if exists $args->{customerProfileId};
     $writer->startTag('address');
-    
+
     my @flds = ('firstName', 'lastName', 'company', 'address', 'city', 'state', 'zip', 'country', 'phoneNumber', 'faxNumber');
     my $addr = exists $args->{shipToList} ? $args->{shipToList} : $args;
     foreach my $k (@flds) {
@@ -1053,7 +1053,7 @@ sub updateCustomerShippingAddress {
 
     $writer->dataElement('customerAddressId', $args->{customerAddressId});
     $writer->endTag('address');
-    
+
     $writer->endTag('updateCustomerShippingAddressRequest');
 
     $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
@@ -1078,7 +1078,7 @@ Update the status of a split tender group (a group of transactions, each of whic
 
 sub updateSplitTenderGroupRequest {
     my ($self, $splitTenderId, $splitTenderStatus) = @_;
-    
+
     my $xml;
     my $writer = XML::Writer->new(OUTPUT => \$xml);
     $writer->startTag('updateSplitTenderGroupRequest', 'xmlns' => 'AnetApi/xml/v1/schema/AnetApiSchema.xsd');
@@ -1109,7 +1109,7 @@ Verify an existing customer payment profile by generating a test transaction.
         customerProfileId => $customerProfileId,
         customerPaymentProfileId => $customerPaymentProfileId,
         customerShippingAddressId => $customerShippingAddressId,
-        
+
         cardCode => $cardCode, # Optional
     );
 
@@ -1118,7 +1118,7 @@ Verify an existing customer payment profile by generating a test transaction.
 sub validateCustomerPaymentProfile {
     my $self = shift;
     my $args = scalar @_ % 2 ? shift : { @_ };
-    
+
     my $xml;
     my $writer = XML::Writer->new(OUTPUT => \$xml);
     $writer->startTag('validateCustomerPaymentProfileRequest', 'xmlns' => 'AnetApi/xml/v1/schema/AnetApiSchema.xsd');
