@@ -557,14 +557,14 @@ sub createCustomerProfileTransaction {
     # lineItems
     if (exists $args->{lineItems}) {
         my @lineItems = (ref($args->{lineItems}) eq 'ARRAY') ? @{$args->{lineItems}} : ($args->{lineItems});
-        $writer->startTag('lineItems');
         foreach my $lineItem (@lineItems) {
+            $writer->startTag('lineItems');
             foreach my $k ('itemId', 'name', 'description', 'quantity', 'unitPrice', 'taxable') {
                 $writer->dataElement($k, $lineItem->{$k})
                     if exists $lineItem->{$k};
             }
+            $writer->endTag('lineItems');
         }
-        $writer->endTag('lineItems');
     }
 
     $writer->dataElement('customerProfileId', $args->{customerProfileId});
