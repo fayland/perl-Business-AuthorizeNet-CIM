@@ -1,5 +1,8 @@
 Revision history for Perl extension Business-AuthorizeNet-CIM
 
+0.07    2013.01.16
+        Fix RT 80389: properly generate xml for multiple lineItems in a transaction (rhesa, Rhesa Rozendaal)
+
 0.06    2011.12.24
         bug fixes from rjbs
 
