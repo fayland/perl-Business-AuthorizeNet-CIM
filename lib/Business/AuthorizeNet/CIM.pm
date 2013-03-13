@@ -398,10 +398,6 @@ sub createCustomerShippingAddressRequest {
     }
 
     $writer->endTag('address');
-
-    if ($self->{test_mode}) {
-        $writer->dataElement('validationMode', 'testMode');
-    }
     $writer->endTag('createCustomerShippingAddressRequest');
 
     $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
@@ -675,9 +671,6 @@ sub deleteCustomerPaymentProfileRequest {
     $writer->endTag('merchantAuthentication');
     $writer->dataElement('customerProfileId', $customerProfileId);
     $writer->dataElement('customerPaymentProfileId', $customerPaymentProfileId);
-    if ($self->{test_mode}) {
-        $writer->dataElement('validationMode', 'testMode');
-    }
     $writer->endTag('deleteCustomerPaymentProfileRequest');
 
     $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
@@ -711,9 +704,6 @@ sub deleteCustomerShippingAddressRequest {
     $writer->endTag('merchantAuthentication');
     $writer->dataElement('customerProfileId', $customerProfileId);
     $writer->dataElement('customerAddressId', $customerAddressId);
-    if ($self->{test_mode}) {
-        $writer->dataElement('validationMode', 'testMode');
-    }
     $writer->endTag('deleteCustomerShippingAddressRequest');
 
     $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
@@ -818,9 +808,6 @@ sub getCustomerPaymentProfileRequest {
     $writer->endTag('merchantAuthentication');
     $writer->dataElement('customerProfileId', $customerProfileId);
     $writer->dataElement('customerPaymentProfileId', $customerPaymentProfileId);
-    if ($self->{test_mode}) {
-        $writer->dataElement('validationMode', 'testMode');
-    }
     $writer->endTag('getCustomerPaymentProfileRequest');
 
     $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
@@ -854,9 +841,6 @@ sub getCustomerShippingAddressRequest {
     $writer->endTag('merchantAuthentication');
     $writer->dataElement('customerProfileId', $customerProfileId);
     $writer->dataElement('customerAddressId', $customerAddressId);
-    if ($self->{test_mode}) {
-        $writer->dataElement('validationMode', 'testMode');
-    }
     $writer->endTag('getCustomerShippingAddressRequest');
 
     $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
