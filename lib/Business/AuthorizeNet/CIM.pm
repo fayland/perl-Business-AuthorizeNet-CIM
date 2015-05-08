@@ -538,7 +538,7 @@ sub createCustomerProfileTransaction {
     $writer->dataElement('refId', $args->{refId}) if exists $args->{refId};
     $writer->startTag('transaction');
     $writer->startTag($trans_type); # profileTransAuthOnly, profileTransPriorAuthCapture etc
-    $writer->dataElement('amount', $args->{amount});
+    $writer->dataElement('amount', $args->{amount}) if exists $args->{amount};
 
     foreach my $type ('tax', 'shipping', 'duty') {
         next unless exists $args->{$type};
