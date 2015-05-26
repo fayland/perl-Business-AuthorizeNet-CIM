@@ -1,5 +1,7 @@
 Revision history for Perl extension Business-AuthorizeNet-CIM
 
+        add getHostedProfilePageRequest method (Olaf Alders)
+
 0.08    2013.03.13
         remove validationMode element from API calls that do not support it [Rhesa Rozendaal]
 
