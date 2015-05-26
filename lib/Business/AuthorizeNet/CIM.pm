@@ -858,13 +858,27 @@ sub getCustomerShippingAddressRequest {
 
 Get a token for use in a CIM hosted popup.
 
-    my $result = $cim->getHostedProfilePageRequest($customerProfileId);
+    my $result = $cim->getHostedProfilePageRequest(
+        customerProfileID,
+    {
+        hostedProfileReturnUrl         => 'http://example.com/foo',
+        hostedProfileReturnUrlText     => 'Return home',
+        hostedProfilePageBorderVisible => 'true',
+        hostedProfileHeadingBgColor    => '#000',
+        hostedProfileIFrameCommunicatorUrl =>
+            'https://example.com/communicate',
+        hostedProfileValidationMode         => 'testMode',
+        hostedProfileBillingAddressRequired => 'true',
+        hostedProfileCardCodeRequired       => 'true',
+    }
+
+    );
     print $result->{token} if $result->{messages}->{resultCode} eq 'Ok';
 
 =cut
 
 sub getHostedProfilePageRequest {
-    my ($self, $customerProfileId) = @_;
+    my ($self, $customerProfileId, $args) = @_;
 
     my $xml;
     my $writer = XML::Writer->new(OUTPUT => \$xml);
@@ -874,6 +888,18 @@ sub getHostedProfilePageRequest {
     $writer->dataElement('transactionKey', $self->{transactionKey});
     $writer->endTag('merchantAuthentication');
     $writer->dataElement('customerProfileId', $customerProfileId);
+
+    if ( $args ) {
+        $writer->startTag('hostedProfileSettings');
+        foreach my $name ( keys %{$args} ) {
+            $writer->startTag( 'setting' );
+            $writer->dataElement('settingName', $name);
+            $writer->dataElement('settingValue', $args->{$name});
+            $writer->endTag( 'setting' );
+        }
+        $writer->endTag('hostedProfileSettings');
+    }
+
     $writer->endTag('getHostedProfilePageRequest');
 
     $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
