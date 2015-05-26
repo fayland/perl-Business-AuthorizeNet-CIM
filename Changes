@@ -1,5 +1,6 @@
 Revision history for Perl extension Business-AuthorizeNet-CIM
 
+0.10    2015-05-26
         allow additional params to be passed to getHostedProfilePageRequest (Olaf Alders)
 
 0.09    2015-05-26
