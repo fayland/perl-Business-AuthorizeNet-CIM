@@ -574,7 +574,8 @@ sub createCustomerProfileTransaction {
     }
 
     $writer->dataElement('customerProfileId', $args->{customerProfileId});
-    $writer->dataElement('customerPaymentProfileId', $args->{customerPaymentProfileId});
+    $writer->dataElement('customerPaymentProfileId', $args->{customerPaymentProfileId}) 
+        if $args->{customerPaymentProfileId};
     $writer->dataElement('customerShippingAddressId', $args->{customerShippingAddressId})
         if $args->{customerShippingAddressId};
 
