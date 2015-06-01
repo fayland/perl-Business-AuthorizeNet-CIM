@@ -51,6 +51,10 @@ The valid Transaction Key for the developer test or merchant account
 
 validationMode as testMode or liveMode
 
+=item * test_host_only
+
+use test api host and keep default validationMode
+
 =item * ua_args
 
 passed to LWP::UserAgent
@@ -71,7 +75,7 @@ sub new {
     $args->{login} or croak 'login is required';
     $args->{transactionKey} or croak 'transactionKey is required';
 
-    if ($args->{test_mode}) {
+    if ($args->{test_mode} || $args->{test_host_only}) {
         $args->{url} = 'https://apitest.authorize.net/xml/v1/request.api';
     } else {
         $args->{url} = 'https://api.authorize.net/xml/v1/request.api';
@@ -232,8 +236,12 @@ sub createCustomerProfile {
     }
 
     $writer->endTag('profile');
-    if ($need_payment_profiles && $self->{test_mode}) {
-        $writer->dataElement('validationMode', 'testMode');
+    if ($need_payment_profiles) {
+        if ($self->{test_mode}) {
+            $writer->dataElement('validationMode', 'testMode');
+        } else {
+            $writer->dataElement('validationMode', 'liveMode');
+        }
     }
     $writer->endTag('createCustomerProfileRequest');
 
@@ -338,6 +346,8 @@ sub createCustomerPaymentProfileRequest {
 
     if ($self->{test_mode}) {
         $writer->dataElement('validationMode', 'testMode');
+    } else {
+        $writer->dataElement('validationMode', 'liveMode');
     }
     $writer->endTag('createCustomerPaymentProfileRequest');
 
@@ -538,7 +548,7 @@ sub createCustomerProfileTransaction {
     $writer->dataElement('refId', $args->{refId}) if exists $args->{refId};
     $writer->startTag('transaction');
     $writer->startTag($trans_type); # profileTransAuthOnly, profileTransPriorAuthCapture etc
-    $writer->dataElement('amount', $args->{amount});
+    $writer->dataElement('amount', $args->{amount}) if exists $args->{amount};
 
     foreach my $type ('tax', 'shipping', 'duty') {
         next unless exists $args->{$type};
@@ -564,7 +574,8 @@ sub createCustomerProfileTransaction {
     }
 
     $writer->dataElement('customerProfileId', $args->{customerProfileId});
-    $writer->dataElement('customerPaymentProfileId', $args->{customerPaymentProfileId});
+    $writer->dataElement('customerPaymentProfileId', $args->{customerPaymentProfileId}) 
+        if $args->{customerPaymentProfileId};
     $writer->dataElement('customerShippingAddressId', $args->{customerShippingAddressId})
         if $args->{customerShippingAddressId};
 
@@ -1054,6 +1065,8 @@ sub updateCustomerPaymentProfile {
 
     if ($self->{test_mode}) {
         $writer->dataElement('validationMode', 'testMode');
+    } else {
+        $writer->dataElement('validationMode', 'liveMode');
     }
     $writer->endTag('updateCustomerPaymentProfileRequest');
 
