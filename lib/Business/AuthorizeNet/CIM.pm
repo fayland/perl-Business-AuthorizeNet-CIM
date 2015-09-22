@@ -239,7 +239,11 @@ sub createCustomerProfile {
     if ($need_payment_profiles) {
         if ($self->{test_mode}) {
             $writer->dataElement('validationMode', 'testMode');
-        } else {
+        }
+        elsif ($args->{validationMode}) {
+            $writer->dataElement( 'validationMode', $args->{validationMode} );
+        }
+        else {
             $writer->dataElement('validationMode', 'liveMode');
         }
     }
@@ -346,7 +350,11 @@ sub createCustomerPaymentProfileRequest {
 
     if ($self->{test_mode}) {
         $writer->dataElement('validationMode', 'testMode');
-    } else {
+    }
+    elsif ($args->{validationMode}) {
+        $writer->dataElement( 'validationMode', $args->{validationMode} );
+    }
+    else {
         $writer->dataElement('validationMode', 'liveMode');
     }
     $writer->endTag('createCustomerPaymentProfileRequest');
@@ -1007,7 +1015,11 @@ sub updateCustomerPaymentProfile {
 
     if ($self->{test_mode}) {
         $writer->dataElement('validationMode', 'testMode');
-    } else {
+    }
+    elsif ($args->{validationMode}) {
+        $writer->dataElement( 'validationMode', $args->{validationMode} );
+    }
+    else {
         $writer->dataElement('validationMode', 'liveMode');
     }
     $writer->endTag('updateCustomerPaymentProfileRequest');
