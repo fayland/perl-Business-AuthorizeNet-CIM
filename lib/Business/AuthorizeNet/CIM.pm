@@ -78,7 +78,7 @@ sub new {
     if ($args->{test_mode} || $args->{test_host_only}) {
         $args->{url} = 'https://apitest.authorize.net/xml/v1/request.api';
     } else {
-        $args->{url} = 'https://api.authorize.net/xml/v1/request.api';
+        $args->{url} = 'https://api2.authorize.net/xml/v1/request.api';
     }
 
     unless ( $args->{ua} ) {
