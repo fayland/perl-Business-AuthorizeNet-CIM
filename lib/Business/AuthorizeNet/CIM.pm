@@ -78,7 +78,7 @@ sub new {
     if ($args->{test_mode} || $args->{test_host_only}) {
         $args->{url} = 'https://apitest.authorize.net/xml/v1/request.api';
     } else {
-        $args->{url} = 'https://api.authorize.net/xml/v1/request.api';
+        $args->{url} = 'https://api2.authorize.net/xml/v1/request.api';
     }
 
     unless ( $args->{ua} ) {
@@ -239,7 +239,11 @@ sub createCustomerProfile {
     if ($need_payment_profiles) {
         if ($self->{test_mode}) {
             $writer->dataElement('validationMode', 'testMode');
-        } else {
+        }
+        elsif ($args->{validationMode}) {
+            $writer->dataElement( 'validationMode', $args->{validationMode} );
+        }
+        else {
             $writer->dataElement('validationMode', 'liveMode');
         }
     }
@@ -346,7 +350,11 @@ sub createCustomerPaymentProfileRequest {
 
     if ($self->{test_mode}) {
         $writer->dataElement('validationMode', 'testMode');
-    } else {
+    }
+    elsif ($args->{validationMode}) {
+        $writer->dataElement( 'validationMode', $args->{validationMode} );
+    }
+    else {
         $writer->dataElement('validationMode', 'liveMode');
     }
     $writer->endTag('createCustomerPaymentProfileRequest');
@@ -1066,7 +1074,11 @@ sub updateCustomerPaymentProfile {
 
     if ($self->{test_mode}) {
         $writer->dataElement('validationMode', 'testMode');
-    } else {
+    }
+    elsif ($args->{validationMode}) {
+        $writer->dataElement( 'validationMode', $args->{validationMode} );
+    }
+    else {
         $writer->dataElement('validationMode', 'liveMode');
     }
     $writer->endTag('updateCustomerPaymentProfileRequest');
