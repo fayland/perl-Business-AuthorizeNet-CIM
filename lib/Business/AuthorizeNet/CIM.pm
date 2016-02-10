@@ -817,7 +817,7 @@ Retrieve a customer payment profile for an existing customer profile.
 =cut
 
 sub getCustomerPaymentProfileRequest {
-    my ($self, $customerProfileId, $customerPaymentProfileId) = @_;
+    my ($self, $customerProfileId, $customerPaymentProfileId, $unmaskExpirationDate) = @_;
 
     my $xml;
     my $writer = XML::Writer->new(OUTPUT => \$xml);
@@ -828,6 +828,7 @@ sub getCustomerPaymentProfileRequest {
     $writer->endTag('merchantAuthentication');
     $writer->dataElement('customerProfileId', $customerProfileId);
     $writer->dataElement('customerPaymentProfileId', $customerPaymentProfileId);
+    $writer->dataElement('unmaskExpirationDate', 'true') if $unmaskExpirationDate;
     $writer->endTag('getCustomerPaymentProfileRequest');
 
     $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
