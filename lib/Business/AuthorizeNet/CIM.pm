@@ -875,6 +875,65 @@ sub getCustomerShippingAddressRequest {
 
 =pod
 
+=head3 getHostedProfilePageRequest
+
+Get a token for use in a CIM hosted popup.
+
+    my $result = $cim->getHostedProfilePageRequest(
+        customerProfileID,
+    {
+        hostedProfileReturnUrl         => 'http://example.com/foo',
+        hostedProfileReturnUrlText     => 'Return home',
+        hostedProfilePageBorderVisible => 'true',
+        hostedProfileHeadingBgColor    => '#000',
+        hostedProfileIFrameCommunicatorUrl =>
+            'https://example.com/communicate',
+        hostedProfileValidationMode         => 'testMode',
+        hostedProfileBillingAddressRequired => 'true',
+        hostedProfileCardCodeRequired       => 'true',
+    }
+
+    );
+    print $result->{token} if $result->{messages}->{resultCode} eq 'Ok';
+
+=cut
+
+sub getHostedProfilePageRequest {
+    my ($self, $customerProfileId, $args) = @_;
+
+    my $xml;
+    my $writer = XML::Writer->new(OUTPUT => \$xml);
+    $writer->startTag('getHostedProfilePageRequest', 'xmlns' => 'AnetApi/xml/v1/schema/AnetApiSchema.xsd');
+    $writer->startTag('merchantAuthentication');
+    $writer->dataElement('name', $self->{login});
+    $writer->dataElement('transactionKey', $self->{transactionKey});
+    $writer->endTag('merchantAuthentication');
+    $writer->dataElement('customerProfileId', $customerProfileId);
+
+    if ( $args ) {
+        $writer->startTag('hostedProfileSettings');
+        foreach my $name ( keys %{$args} ) {
+            $writer->startTag( 'setting' );
+            $writer->dataElement('settingName', $name);
+            $writer->dataElement('settingValue', $args->{$name});
+            $writer->endTag( 'setting' );
+        }
+        $writer->endTag('hostedProfileSettings');
+    }
+
+    $writer->endTag('getHostedProfilePageRequest');
+
+    $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
+    print "<!-- $xml -->\n\n" if $self->{debug};
+    my $resp = $self->{ua}->post($self->{url}, Content => $xml, 'Content-Type' => 'text/xml');
+    print "<!-- " . $resp->content . " -->\n\n" if $self->{debug};
+
+    my $d = XMLin($resp->content, SuppressEmpty => '');
+    return $d;
+}
+
+=pod
+
 =head3 updateCustomerProfile
 
 Update an existing customer profile
