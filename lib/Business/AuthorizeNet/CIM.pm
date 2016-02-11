@@ -810,9 +810,10 @@ sub getCustomerProfile {
 
 =head3 getCustomerPaymentProfileRequest
 
-Retrieve a customer payment profile for an existing customer profile.
+Retrieve a customer payment profile for an existing customer profile. $unmaskExpirationDate is an optional boolean arg, if passed
+a true value it will return the expiration date in YYYY-MM format, else it will mask as XXXX.
 
-    $cim->getCustomerPaymentProfileRequest($customerProfileId, $customerPaymentProfileId);
+    $cim->getCustomerPaymentProfileRequest($customerProfileId, $customerPaymentProfileId, $unmaskExpirationDate);
 
 =cut
 
