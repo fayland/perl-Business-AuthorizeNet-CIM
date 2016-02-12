@@ -1,5 +1,8 @@
 Revision history for Perl extension Business-AuthorizeNet-CIM
 
+0.14    2016-02-12
+        unmaskExpirationDate (paulwelscott)
+
 0.13    2015-09-23
         Production Web Service URL update, Support for validationMode (paulwelscott)
 
