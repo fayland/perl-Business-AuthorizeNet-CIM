@@ -249,13 +249,7 @@ sub createCustomerProfile {
     }
     $writer->endTag('createCustomerProfileRequest');
 
-    $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
-    print "<!-- $xml -->\n\n" if $self->{debug};
-    my $resp = $self->{ua}->post($self->{url}, Content => $xml, 'Content-Type' => 'text/xml');
-    print "<!-- " . $resp->content . " -->\n\n" if $self->{debug};
-
-    my $d = XMLin($resp->content, SuppressEmpty => '');
-    return $d;
+    return $self->_send($xml);
 }
 
 =pod
@@ -359,13 +353,7 @@ sub createCustomerPaymentProfileRequest {
     }
     $writer->endTag('createCustomerPaymentProfileRequest');
 
-    $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
-    print "<!-- $xml -->\n\n" if $self->{debug};
-    my $resp = $self->{ua}->post($self->{url}, Content => $xml, 'Content-Type' => 'text/xml');
-    print "<!-- " . $resp->content . " -->\n\n" if $self->{debug};
-
-    my $d = XMLin($resp->content, SuppressEmpty => '');
-    return $d;
+    return $self->_send($xml);
 }
 
 =pod
@@ -418,13 +406,7 @@ sub createCustomerShippingAddressRequest {
     $writer->endTag('address');
     $writer->endTag('createCustomerShippingAddressRequest');
 
-    $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
-    print "<!-- $xml -->\n\n" if $self->{debug};
-    my $resp = $self->{ua}->post($self->{url}, Content => $xml, 'Content-Type' => 'text/xml');
-    print "<!-- " . $resp->content . " -->\n\n" if $self->{debug};
-
-    my $d = XMLin($resp->content, SuppressEmpty => '');
-    return $d;
+    return $self->_send($xml);
 }
 
 =pod
@@ -626,15 +608,7 @@ sub createCustomerProfileTransaction {
 
     $writer->endTag('createCustomerProfileTransactionRequest');
 
-    $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
-    print "<!-- $xml -->\n\n" if $self->{debug};
-    my $resp = $self->{ua}->post($self->{url}, Content => $xml, 'Content-Type' => 'text/xml');
-    print "<!-- " . $resp->content . " -->\n\n" if $self->{debug};
-
-    my $d = XMLin($resp->content, SuppressEmpty => '');
-
-    print "<!-- $xml -->\n\n" if $self->{debug};
-    return $d;
+    return $self->_send($xml);
 }
 
 =pod
@@ -660,13 +634,7 @@ sub deleteCustomerProfile {
     $writer->dataElement('customerProfileId', $customerProfileId);
     $writer->endTag('deleteCustomerProfileRequest');
 
-    $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
-    print "<!-- $xml -->\n\n" if $self->{debug};
-    my $resp = $self->{ua}->post($self->{url}, Content => $xml, 'Content-Type' => 'text/xml');
-    print "<!-- " . $resp->content . " -->\n\n" if $self->{debug};
-
-    my $d = XMLin($resp->content, SuppressEmpty => '');
-    return $d;
+    return $self->_send($xml);
 }
 
 =pod
@@ -693,13 +661,7 @@ sub deleteCustomerPaymentProfileRequest {
     $writer->dataElement('customerPaymentProfileId', $customerPaymentProfileId);
     $writer->endTag('deleteCustomerPaymentProfileRequest');
 
-    $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
-    print "<!-- $xml -->\n\n" if $self->{debug};
-    my $resp = $self->{ua}->post($self->{url}, Content => $xml, 'Content-Type' => 'text/xml');
-    print "<!-- " . $resp->content . " -->\n\n" if $self->{debug};
-
-    my $d = XMLin($resp->content, SuppressEmpty => '');
-    return $d;
+    return $self->_send($xml);
 }
 
 =pod
@@ -726,13 +688,7 @@ sub deleteCustomerShippingAddressRequest {
     $writer->dataElement('customerAddressId', $customerAddressId);
     $writer->endTag('deleteCustomerShippingAddressRequest');
 
-    $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
-    print "<!-- $xml -->\n\n" if $self->{debug};
-    my $resp = $self->{ua}->post($self->{url}, Content => $xml, 'Content-Type' => 'text/xml');
-    print "<!-- " . $resp->content . " -->\n\n" if $self->{debug};
-
-    my $d = XMLin($resp->content, SuppressEmpty => '');
-    return $d;
+    return $self->_send($xml);
 }
 
 =pod
@@ -757,12 +713,7 @@ sub getCustomerProfileIds {
     $writer->endTag('merchantAuthentication');
     $writer->endTag('getCustomerProfileIdsRequest');
 
-    $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
-    print "<!-- $xml -->\n\n" if $self->{debug};
-    my $resp = $self->{ua}->post($self->{url}, Content => $xml, 'Content-Type' => 'text/xml');
-    print "<!-- " . $resp->content . " -->\n\n" if $self->{debug};
-
-    my $d = XMLin($resp->content, SuppressEmpty => '');
+    my $d = $self->_send($xml);
 
     return () unless $d->{ids};
 
@@ -797,13 +748,7 @@ sub getCustomerProfile {
     $writer->dataElement('customerProfileId', $customerProfileId);
     $writer->endTag('getCustomerProfileRequest');
 
-    $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
-    print "<!-- $xml -->\n\n" if $self->{debug};
-    my $resp = $self->{ua}->post($self->{url}, Content => $xml, 'Content-Type' => 'text/xml');
-    print "<!-- " . $resp->content . " -->\n\n" if $self->{debug};
-
-    my $d = XMLin($resp->content, SuppressEmpty => '');
-    return $d;
+    return $self->_send($xml);
 }
 
 =pod
@@ -832,13 +777,7 @@ sub getCustomerPaymentProfileRequest {
     $writer->dataElement('unmaskExpirationDate', 'true') if $unmaskExpirationDate;
     $writer->endTag('getCustomerPaymentProfileRequest');
 
-    $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
-    print "<!-- $xml -->\n\n" if $self->{debug};
-    my $resp = $self->{ua}->post($self->{url}, Content => $xml, 'Content-Type' => 'text/xml');
-    print "<!-- " . $resp->content . " -->\n\n" if $self->{debug};
-
-    my $d = XMLin($resp->content, SuppressEmpty => '');
-    return $d;
+    return $self->_send($xml);
 }
 
 =pod
@@ -865,13 +804,7 @@ sub getCustomerShippingAddressRequest {
     $writer->dataElement('customerAddressId', $customerAddressId);
     $writer->endTag('getCustomerShippingAddressRequest');
 
-    $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
-    print "<!-- $xml -->\n\n" if $self->{debug};
-    my $resp = $self->{ua}->post($self->{url}, Content => $xml, 'Content-Type' => 'text/xml');
-    print "<!-- " . $resp->content . " -->\n\n" if $self->{debug};
-
-    my $d = XMLin($resp->content, SuppressEmpty => '');
-    return $d;
+    return $self->_send($xml);
 }
 
 =pod
@@ -924,13 +857,7 @@ sub getHostedProfilePageRequest {
 
     $writer->endTag('getHostedProfilePageRequest');
 
-    $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
-    print "<!-- $xml -->\n\n" if $self->{debug};
-    my $resp = $self->{ua}->post($self->{url}, Content => $xml, 'Content-Type' => 'text/xml');
-    print "<!-- " . $resp->content . " -->\n\n" if $self->{debug};
-
-    my $d = XMLin($resp->content, SuppressEmpty => '');
-    return $d;
+    return $self->_send($xml);
 }
 
 =pod
@@ -972,13 +899,7 @@ sub updateCustomerProfile {
     $writer->endTag('profile');
     $writer->endTag('updateCustomerProfileRequest');
 
-    $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
-    print "<!-- $xml -->\n\n" if $self->{debug};
-    my $resp = $self->{ua}->post($self->{url}, Content => $xml, 'Content-Type' => 'text/xml');
-    print "<!-- " . $resp->content . " -->\n\n" if $self->{debug};
-
-    my $d = XMLin($resp->content, SuppressEmpty => '');
-    return $d;
+    return $self->_send($xml);
 }
 
 =pod
@@ -1085,13 +1006,7 @@ sub updateCustomerPaymentProfile {
     }
     $writer->endTag('updateCustomerPaymentProfileRequest');
 
-    $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
-    print "<!-- $xml -->\n\n" if $self->{debug};
-    my $resp = $self->{ua}->post($self->{url}, Content => $xml, 'Content-Type' => 'text/xml');
-    print "<!-- " . $resp->content . " -->\n\n" if $self->{debug};
-
-    my $d = XMLin($resp->content, SuppressEmpty => '');
-    return $d;
+    return $self->_send($xml);
 }
 
 =pod
@@ -1148,13 +1063,7 @@ sub updateCustomerShippingAddress {
 
     $writer->endTag('updateCustomerShippingAddressRequest');
 
-    $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
-    print "<!-- $xml -->\n\n" if $self->{debug};
-    my $resp = $self->{ua}->post($self->{url}, Content => $xml, 'Content-Type' => 'text/xml');
-    print "<!-- " . $resp->content . " -->\n\n" if $self->{debug};
-
-    my $d = XMLin($resp->content, SuppressEmpty => '');
-    return $d;
+    return $self->_send($xml);
 }
 
 =pod
@@ -1182,13 +1091,7 @@ sub updateSplitTenderGroupRequest {
     $writer->dataElement('splitTenderStatus', $splitTenderStatus);
     $writer->endTag('updateSplitTenderGroupRequest');
 
-    $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
-    print "<!-- $xml -->\n\n" if $self->{debug};
-    my $resp = $self->{ua}->post($self->{url}, Content => $xml, 'Content-Type' => 'text/xml');
-    print "<!-- " . $resp->content . " -->\n\n" if $self->{debug};
-
-    my $d = XMLin($resp->content, SuppressEmpty => '');
-    return $d;
+    return $self->_send($xml);
 }
 
 =pod
@@ -1230,13 +1133,7 @@ sub validateCustomerPaymentProfile {
     }
     $writer->endTag('validateCustomerPaymentProfileRequest');
 
-    $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
-    print "<!-- $xml -->\n\n" if $self->{debug};
-    my $resp = $self->{ua}->post($self->{url}, Content => $xml, 'Content-Type' => 'text/xml');
-    print "<!-- " . $resp->content . " -->\n\n" if $self->{debug};
-
-    my $d = XMLin($resp->content, SuppressEmpty => '');
-    return $d;
+    return $self->_send($xml);
 }
 
 =head2 Transaction Reporting
