@@ -1239,4 +1239,84 @@ sub validateCustomerPaymentProfile {
     return $d;
 }
 
+=head2 Transaction Reporting
+
+Authorize.Net has a section of the CIM API for reporting on transactions.
+This section of the API must be enabled for the merchant.
+
+  http://developer.authorize.net/api/reference/features/transaction_reporting.html
+  https://developer.authorize.net/api/reference/index.html#transaction-reporting
+
+=head3 getMerchantDetailsRequest 
+
+returns details about the merchant (payment methods, currencies, et al).
+
+  https://developer.authorize.net/api/reference/index.html#transaction-reporting-get-merchant-details
+
+    my $resp = $cim->getMerchantDetailsRequest;
+
+=head3 getTransactionDetailsRequest
+
+return details about a specific transaction: status, payment method, auth and settled amounts, 
+settle date, profile ids, et al.
+
+  https://developer.authorize.net/api/reference/index.html#transaction-reporting-get-transaction-details
+
+    my $resp = $cim->getTransactionDetailsRequest(
+        transId => $transId,
+        refId   => $refId,    # Optional
+    );
+
+=cut
+
+sub getMerchantDetailsRequest {
+    my $self = shift;
+    my $args = scalar @_ % 2 ? shift : {@_};
+
+    my $xml;
+    my $writer = XML::Writer->new( OUTPUT => \$xml );
+    $writer->startTag( 'getMerchantDetailsRequest',
+        'xmlns' => 'AnetApi/xml/v1/schema/AnetApiSchema.xsd' );
+    $writer->startTag('merchantAuthentication');
+    $writer->dataElement( 'name',           $self->{login} );
+    $writer->dataElement( 'transactionKey', $self->{transactionKey} );
+    $writer->endTag('merchantAuthentication');
+    $writer->endTag('getMerchantDetailsRequest');
+
+    return $self->_send($xml);
+}
+
+sub getTransactionDetailsRequest {
+    my $self = shift;
+    my $args = scalar @_ % 2 ? shift : {@_};
+
+    my $xml;
+    my $writer = XML::Writer->new( OUTPUT => \$xml );
+    $writer->startTag( 'getTransactionDetailsRequest',
+        'xmlns' => 'AnetApi/xml/v1/schema/AnetApiSchema.xsd' );
+    $writer->startTag('merchantAuthentication');
+    $writer->dataElement( 'name',           $self->{login} );
+    $writer->dataElement( 'transactionKey', $self->{transactionKey} );
+    $writer->endTag('merchantAuthentication');
+    $writer->dataElement( 'transId', $args->{transId} );
+    $writer->dataElement( 'refId', $args->{refId} ) if exists $args->{refId};
+    $writer->endTag('getTransactionDetailsRequest');
+
+    return $self->_send($xml);
+}
+
+
+sub _send {
+    my ($self, $xml) = @_;
+
+    $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
+    print "<!-- $xml -->\n\n" if $self->{debug};
+    my $resp = $self->{ua}
+      ->post( $self->{url}, Content => $xml, 'Content-Type' => 'text/xml' );
+    print "<!-- " . $resp->content . " -->\n\n" if $self->{debug};
+
+    my $d = XMLin( $resp->content, SuppressEmpty => '' );
+    return $d;
+}
+
 1;
