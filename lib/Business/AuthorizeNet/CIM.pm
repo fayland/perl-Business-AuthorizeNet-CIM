@@ -1196,8 +1196,8 @@ sub getTransactionDetailsRequest {
     $writer->dataElement( 'name',           $self->{login} );
     $writer->dataElement( 'transactionKey', $self->{transactionKey} );
     $writer->endTag('merchantAuthentication');
-    $writer->dataElement( 'transId', $args->{transId} );
-    $writer->dataElement( 'refId', $args->{refId} ) if exists $args->{refId};
+    $writer->dataElement( transId => $args->{transId} );
+    $writer->dataElement( refId   => $args->{refId} ) if defined $args->{refId};
     $writer->endTag('getTransactionDetailsRequest');
     $writer->end;
 
