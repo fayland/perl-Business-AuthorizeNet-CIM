@@ -1263,6 +1263,8 @@ sub getTransactionListForCustomerRequest {
     $writer->dataElement( customerProfileId => $args->{customerProfileId} );
     $writer->dataElement( customerPaymentProfileId => $args->{customerPaymentProfileId } )
         if $args->{customerPaymentProfileId};
+    $self->_addHash($writer, 'sorting', $args, qw<orderBy orderDescending>);
+    $self->_addHash($writer, 'paging',  $args, qw<limit offset>);
 
     $writer->endTag('getTransactionListForCustomerRequest');
     $writer->end;
@@ -1306,6 +1308,8 @@ sub getTransactionListRequest {
 
     $writer->dataElement( refId   => $args->{refId} ) if defined $args->{refId};
     $writer->dataElement( batchId => $args->{batchId} );
+    $self->_addHash($writer, 'sorting', $args, qw<orderBy orderDescending>);
+    $self->_addHash($writer, 'paging',  $args, qw<limit offset>);
 
     $writer->endTag('getTransactionListRequest');
     $writer->end;
@@ -1320,6 +1324,18 @@ sub _addAuthentication {
     $writer->dataElement( name =>           $self->{login} );
     $writer->dataElement( transactionKey => $self->{transactionKey} );
     $writer->endTag('merchantAuthentication');
+}
+
+sub _addHash {
+    my ($self, $writer, $tagname, $argsref, @selectedkeys) = @_;
+    return unless my $hash = $argsref->{$tagname};
+    @selectedkeys = keys %$hash unless @selectedkeys;
+
+    $writer->startTag($tagname);
+    foreach my $k (@selectedkeys) {
+        $writer->dataElement($k => $hash->{$k}) if defined $hash->{$k};
+    }
+    $writer->endTag($tagname);
 }
 
 sub _send {
