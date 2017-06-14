@@ -1240,8 +1240,8 @@ sub getTransactionDetailsRequest {
         xmlns => 'AnetApi/xml/v1/schema/AnetApiSchema.xsd' );
     $self->_addAuthentication($writer);
 
-    $writer->dataElement( transId => $args->{transId} );
     $writer->dataElement( refId   => $args->{refId} ) if defined $args->{refId};
+    $writer->dataElement( transId => $args->{transId} );
 
     $writer->endTag('getTransactionDetailsRequest');
     $writer->end;
@@ -1259,10 +1259,10 @@ sub getTransactionListForCustomerRequest {
         xmlns => 'AnetApi/xml/v1/schema/AnetApiSchema.xsd' );
     $self->_addAuthentication($writer);
 
+    $writer->dataElement( refId => $args->{refId} ) if defined $args->{refId};
     $writer->dataElement( customerProfileId => $args->{customerProfileId} );
     $writer->dataElement( customerPaymentProfileId => $args->{customerPaymentProfileId } )
         if $args->{customerPaymentProfileId};
-    $writer->dataElement( refId => $args->{refId} ) if defined $args->{refId};
 
     $writer->endTag('getTransactionListForCustomerRequest');
     $writer->end;
@@ -1304,8 +1304,8 @@ sub getTransactionListRequest {
         xmlns => 'AnetApi/xml/v1/schema/AnetApiSchema.xsd' );
     $self->_addAuthentication($writer);
 
-    $writer->dataElement( batchId => $args->{batchId} );
     $writer->dataElement( refId   => $args->{refId} ) if defined $args->{refId};
+    $writer->dataElement( batchId => $args->{batchId} );
 
     $writer->endTag('getTransactionListRequest');
     $writer->end;
