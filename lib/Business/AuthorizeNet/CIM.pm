@@ -24,7 +24,11 @@ use XML::Simple 'XMLin';
 
 =head1 DESCRIPTION
 
-Authorize.Net Customer Information Manager (CIM) Web Services API for L<http://developer.authorize.net/api/cim/>, read L<http://www.authorize.net/support/CIM_XML_guide.pdf> for more details.
+Authorize.Net Customer Information Manager (CIM) Web Services API features are described 
+at L<http://developer.authorize.net/api/reference/features/customer_profiles.html>, the API
+reference is at L<http://developer.authorize.net/api/reference/#customer-profiles>.
+Another useful (but deprecated) reference is L<http://www.authorize.net/support/CIM_XML_guide.pdf>, 
+and the reference XML schema is at L<https://api.authorize.net/xml/v1/schema/AnetApiSchema.xsd>.
 
 =head2 METHODS
 
