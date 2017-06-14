@@ -248,6 +248,7 @@ sub createCustomerProfile {
         }
     }
     $writer->endTag('createCustomerProfileRequest');
+    $writer->end;
 
     return $self->_send($xml);
 }
@@ -352,6 +353,7 @@ sub createCustomerPaymentProfileRequest {
         $writer->dataElement('validationMode', 'liveMode');
     }
     $writer->endTag('createCustomerPaymentProfileRequest');
+    $writer->end;
 
     return $self->_send($xml);
 }
@@ -405,6 +407,7 @@ sub createCustomerShippingAddressRequest {
 
     $writer->endTag('address');
     $writer->endTag('createCustomerShippingAddressRequest');
+    $writer->end;
 
     return $self->_send($xml);
 }
@@ -607,6 +610,7 @@ sub createCustomerProfileTransaction {
         if exists $args->{extraOptions};
 
     $writer->endTag('createCustomerProfileTransactionRequest');
+    $writer->end;
 
     return $self->_send($xml);
 }
@@ -660,6 +664,7 @@ sub deleteCustomerPaymentProfileRequest {
     $writer->dataElement('customerProfileId', $customerProfileId);
     $writer->dataElement('customerPaymentProfileId', $customerPaymentProfileId);
     $writer->endTag('deleteCustomerPaymentProfileRequest');
+    $writer->end;
 
     return $self->_send($xml);
 }
@@ -712,6 +717,7 @@ sub getCustomerProfileIds {
     $writer->dataElement('transactionKey', $self->{transactionKey});
     $writer->endTag('merchantAuthentication');
     $writer->endTag('getCustomerProfileIdsRequest');
+    $writer->end;
 
     my $d = $self->_send($xml);
 
@@ -747,6 +753,7 @@ sub getCustomerProfile {
     $writer->endTag('merchantAuthentication');
     $writer->dataElement('customerProfileId', $customerProfileId);
     $writer->endTag('getCustomerProfileRequest');
+    $writer->end;
 
     return $self->_send($xml);
 }
@@ -803,6 +810,7 @@ sub getCustomerShippingAddressRequest {
     $writer->dataElement('customerProfileId', $customerProfileId);
     $writer->dataElement('customerAddressId', $customerAddressId);
     $writer->endTag('getCustomerShippingAddressRequest');
+    $writer->end;
 
     return $self->_send($xml);
 }
@@ -856,6 +864,7 @@ sub getHostedProfilePageRequest {
     }
 
     $writer->endTag('getHostedProfilePageRequest');
+    $writer->end;
 
     return $self->_send($xml);
 }
@@ -898,6 +907,7 @@ sub updateCustomerProfile {
     $writer->dataElement('customerProfileId', $args->{customerProfileId});
     $writer->endTag('profile');
     $writer->endTag('updateCustomerProfileRequest');
+    $writer->end;
 
     return $self->_send($xml);
 }
@@ -1005,6 +1015,7 @@ sub updateCustomerPaymentProfile {
         $writer->dataElement('validationMode', 'liveMode');
     }
     $writer->endTag('updateCustomerPaymentProfileRequest');
+    $writer->end;
 
     return $self->_send($xml);
 }
@@ -1062,6 +1073,7 @@ sub updateCustomerShippingAddress {
     $writer->endTag('address');
 
     $writer->endTag('updateCustomerShippingAddressRequest');
+    $writer->end;
 
     return $self->_send($xml);
 }
@@ -1090,6 +1102,7 @@ sub updateSplitTenderGroupRequest {
     $writer->dataElement('splitTenderId', $splitTenderId);
     $writer->dataElement('splitTenderStatus', $splitTenderStatus);
     $writer->endTag('updateSplitTenderGroupRequest');
+    $writer->end;
 
     return $self->_send($xml);
 }
@@ -1132,6 +1145,7 @@ sub validateCustomerPaymentProfile {
         $writer->dataElement('validationMode', 'liveMode');
     }
     $writer->endTag('validateCustomerPaymentProfileRequest');
+    $writer->end;
 
     return $self->_send($xml);
 }
