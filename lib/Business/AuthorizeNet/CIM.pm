@@ -1153,10 +1153,23 @@ sub validateCustomerPaymentProfile {
 =head2 Transaction Reporting
 
 Authorize.Net has a section of the CIM API for reporting on transactions.
-This section of the API must be enabled for the merchant.
+This section of the API must be enabled for the merchant in the portal.
 
   http://developer.authorize.net/api/reference/features/transaction_reporting.html
   https://developer.authorize.net/api/reference/index.html#transaction-reporting
+
+=head3 Paging and Sorting Options
+
+API methods that return lists are paged, and the default page size is
+the maximum (1000 records).  However, sorting and paging options can be 
+provided, as described in Authorize.Net's api documentation.  Sorting 
+and paging can be independently provided, but each requires that both 
+its key-value pairs be specified.
+
+  sorting => { orderBy => 'id', orderDescending => 'false' },
+  paging  => { limit => 100, offset => 1 },
+
+N.B. offsets begin at 1.
 
 =head3 getMerchantDetailsRequest 
 
@@ -1168,7 +1181,7 @@ returns details about the merchant (payment methods, currencies, et al).
 
 =head3 getTransactionDetailsRequest
 
-return details about a specific transaction: status, payment method, auth and settled amounts, 
+Return details about a specific transaction: status, payment method, auth and settled amounts, 
 settle date, profile ids, et al.  transId is required.
 
   https://developer.authorize.net/api/reference/index.html#transaction-reporting-get-transaction-details
@@ -1183,6 +1196,7 @@ settle date, profile ids, et al.  transId is required.
 Get transactions for a specific customer profile or customer payment profile.
 customerProfileId is required.  If the payment profile id is omitted, 
 transactions for all payment profiles belonging to that customer are returned.
+Paging and sorting options can be specified.
 
     my $resp = $cim->getTransactionListForCustomerRequest(
         customerProfileId        => $customerProfileId,
@@ -1205,8 +1219,8 @@ statistics by payment type and batch totals.  All inputs are optional.
 
 =head3 getTransactionListRequest
 
-returns data for transactions in a specified batch.  batchId is required input.
-page size defaults its maximum (1000).  paging and sorting options can be specified.
+Returns data for transactions in a specified batch.  batchId is required input.
+Paging and sorting options can be specified.
 
     my $resp = $cim->getTransactionListRequest(
         batchId => $batchId,
@@ -1263,9 +1277,9 @@ sub getTransactionListForCustomerRequest {
     $writer->dataElement( customerProfileId => $args->{customerProfileId} );
     $writer->dataElement( customerPaymentProfileId => $args->{customerPaymentProfileId } )
         if $args->{customerPaymentProfileId};
+
     $self->_addHash($writer, 'sorting', $args, qw<orderBy orderDescending>);
     $self->_addHash($writer, 'paging',  $args, qw<limit offset>);
-
     $writer->endTag('getTransactionListForCustomerRequest');
     $writer->end;
 
@@ -1308,9 +1322,9 @@ sub getTransactionListRequest {
 
     $writer->dataElement( refId   => $args->{refId} ) if defined $args->{refId};
     $writer->dataElement( batchId => $args->{batchId} );
+
     $self->_addHash($writer, 'sorting', $args, qw<orderBy orderDescending>);
     $self->_addHash($writer, 'paging',  $args, qw<limit offset>);
-
     $writer->endTag('getTransactionListRequest');
     $writer->end;
 
