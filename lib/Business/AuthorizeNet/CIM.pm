@@ -1179,6 +1179,7 @@ sub getMerchantDetailsRequest {
     $writer->dataElement( 'transactionKey', $self->{transactionKey} );
     $writer->endTag('merchantAuthentication');
     $writer->endTag('getMerchantDetailsRequest');
+    $writer->end;
 
     return $self->_send($xml);
 }
@@ -1198,6 +1199,7 @@ sub getTransactionDetailsRequest {
     $writer->dataElement( 'transId', $args->{transId} );
     $writer->dataElement( 'refId', $args->{refId} ) if exists $args->{refId};
     $writer->endTag('getTransactionDetailsRequest');
+    $writer->end;
 
     return $self->_send($xml);
 }
