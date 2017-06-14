@@ -1173,11 +1173,8 @@ sub getMerchantDetailsRequest {
     my $xml;
     my $writer = XML::Writer->new( OUTPUT => \$xml );
     $writer->startTag( 'getMerchantDetailsRequest',
-        'xmlns' => 'AnetApi/xml/v1/schema/AnetApiSchema.xsd' );
-    $writer->startTag('merchantAuthentication');
-    $writer->dataElement( 'name',           $self->{login} );
-    $writer->dataElement( 'transactionKey', $self->{transactionKey} );
-    $writer->endTag('merchantAuthentication');
+        xmlns => 'AnetApi/xml/v1/schema/AnetApiSchema.xsd' );
+    $self->_addAuthentication($writer);
     $writer->endTag('getMerchantDetailsRequest');
     $writer->end;
 
@@ -1191,19 +1188,26 @@ sub getTransactionDetailsRequest {
     my $xml;
     my $writer = XML::Writer->new( OUTPUT => \$xml );
     $writer->startTag( 'getTransactionDetailsRequest',
-        'xmlns' => 'AnetApi/xml/v1/schema/AnetApiSchema.xsd' );
-    $writer->startTag('merchantAuthentication');
-    $writer->dataElement( 'name',           $self->{login} );
-    $writer->dataElement( 'transactionKey', $self->{transactionKey} );
-    $writer->endTag('merchantAuthentication');
+        xmlns => 'AnetApi/xml/v1/schema/AnetApiSchema.xsd' );
+    $self->_addAuthentication($writer);
+
     $writer->dataElement( transId => $args->{transId} );
     $writer->dataElement( refId   => $args->{refId} ) if defined $args->{refId};
+
     $writer->endTag('getTransactionDetailsRequest');
     $writer->end;
 
     return $self->_send($xml);
 }
 
+
+sub _addAuthentication {
+    my ($self, $writer) = @_;
+    $writer->startTag('merchantAuthentication');
+    $writer->dataElement( name =>           $self->{login} );
+    $writer->dataElement( transactionKey => $self->{transactionKey} );
+    $writer->endTag('merchantAuthentication');
+}
 
 sub _send {
     my ($self, $xml) = @_;
