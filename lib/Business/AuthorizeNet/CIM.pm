@@ -1169,12 +1169,25 @@ returns details about the merchant (payment methods, currencies, et al).
 =head3 getTransactionDetailsRequest
 
 return details about a specific transaction: status, payment method, auth and settled amounts, 
-settle date, profile ids, et al.
+settle date, profile ids, et al.  transId is required.
 
   https://developer.authorize.net/api/reference/index.html#transaction-reporting-get-transaction-details
 
     my $resp = $cim->getTransactionDetailsRequest(
         transId => $transId,
+        refId   => $refId,    # Optional
+    );
+
+=head3 getTransactionListForCustomerRequest
+
+Get transactions for a specific customer profile or customer payment profile.
+customerProfileId is required.  If the payment profile id is omitted, 
+transactions for all payment profiles belonging to that customer are returned.
+
+    my $resp = $cim->getTransactionListForCustomerRequest(
+        customerProfileId        => $customerProfileId,
+        customerPaymentProfileId => $customerPaymentProfileId,  # Optional
+
         refId   => $refId,    # Optional
     );
 
@@ -1214,6 +1227,26 @@ sub getTransactionDetailsRequest {
     return $self->_send($xml);
 }
 
+sub getTransactionListForCustomerRequest {
+    my $self = shift;
+    my $args = scalar @_ % 2 ? shift : {@_};
+
+    my $xml;
+    my $writer = XML::Writer->new( OUTPUT => \$xml );
+    $writer->startTag( 'getTransactionListForCustomerRequest',
+        xmlns => 'AnetApi/xml/v1/schema/AnetApiSchema.xsd' );
+    $self->_addAuthentication($writer);
+
+    $writer->dataElement( customerProfileId => $args->{customerProfileId} );
+    $writer->dataElement( customerPaymentProfileId => $args->{customerPaymentProfileId } )
+        if $args->{customerPaymentProfileId};
+    $writer->dataElement( refId => $args->{refId} ) if defined $args->{refId};
+
+    $writer->endTag('getTransactionListForCustomerRequest');
+    $writer->end;
+
+    return $self->_send($xml);
+}
 
 sub _addAuthentication {
     my ($self, $writer) = @_;
