@@ -1191,6 +1191,28 @@ transactions for all payment profiles belonging to that customer are returned.
         refId   => $refId,    # Optional
     );
 
+=head3 getSettledBatchListRequest
+
+returns Batch ID, Settlement Time, & Settlement State for all settled batches with 
+a range of dates. If you specify includeStatistics, you also receive batch 
+statistics by payment type and batch totals.  All inputs are optional.
+
+    my $resp = $cim->getSettledBatchListRequest(
+        includeStatistics => 'true',                   # Optional
+        firstSettlementDate => '2010-09-21T16:00:00',  # Optional
+        lastSettlementDate  => '2010-10-01T00:00:00',  # Optional
+    );
+
+=head3 getTransactionListRequest
+
+returns data for transactions in a specified batch.  batchId is required input.
+page size defaults its maximum (1000).  paging and sorting options can be specified.
+
+    my $resp = $cim->getTransactionListRequest(
+        batchId => $batchId,
+        refId   => $refId,    # Optional
+    );
+
 =cut
 
 sub getMerchantDetailsRequest {
@@ -1247,6 +1269,50 @@ sub getTransactionListForCustomerRequest {
 
     return $self->_send($xml);
 }
+
+sub getSettledBatchListRequest {
+    my $self = shift;
+    my $args = scalar @_ % 2 ? shift : {@_};
+
+    my $xml;
+    my $writer = XML::Writer->new( OUTPUT => \$xml );
+    $writer->startTag( 'getSettledBatchListRequest',
+        xmlns => 'AnetApi/xml/v1/schema/AnetApiSchema.xsd' );
+    $self->_addAuthentication($writer);
+
+    $writer->dataElement( refId => $args->{refId} ) if defined $args->{refId};
+    $writer->dataElement( includeStatistics => $args->{includeStatistics} )
+        if defined $args->{includeStatistics};
+    $writer->dataElement( firstSettlementDate => $args->{firstSettlementDate} )
+        if defined $args->{firstSettlementDate};
+    $writer->dataElement( lastSettlementDate => $args->{lastSettlementDate} )
+        if defined $args->{lastSettlementDate};
+
+    $writer->endTag('getSettledBatchListRequest');
+    $writer->end;
+
+    return $self->_send($xml);
+}
+
+sub getTransactionListRequest {
+    my $self = shift;
+    my $args = scalar @_ % 2 ? shift : {@_};
+
+    my $xml;
+    my $writer = XML::Writer->new( OUTPUT => \$xml );
+    $writer->startTag( 'getTransactionListRequest',
+        xmlns => 'AnetApi/xml/v1/schema/AnetApiSchema.xsd' );
+    $self->_addAuthentication($writer);
+
+    $writer->dataElement( batchId => $args->{batchId} );
+    $writer->dataElement( refId   => $args->{refId} ) if defined $args->{refId};
+
+    $writer->endTag('getTransactionListRequest');
+    $writer->end;
+
+    return $self->_send($xml);
+}
+
 
 sub _addAuthentication {
     my ($self, $writer) = @_;
