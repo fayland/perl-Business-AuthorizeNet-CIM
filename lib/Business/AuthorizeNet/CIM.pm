@@ -1205,6 +1205,15 @@ Paging and sorting options can be specified.
         refId   => $refId,    # Optional
     );
 
+=head3 getUnsettledTransactionListRequest 
+
+Get data for unsettled transactions.  No parameters are required.
+Paging and sorting options can be specified.
+
+    my $resp = $cim->getUnsettledTransactionListRequest(
+        refId   => $refId,    # Optional
+    );
+
 =head3 getSettledBatchListRequest
 
 returns Batch ID, Settlement Time, & Settlement State for all settled batches with 
@@ -1281,6 +1290,26 @@ sub getTransactionListForCustomerRequest {
     $self->_addHash($writer, 'sorting', $args, qw<orderBy orderDescending>);
     $self->_addHash($writer, 'paging',  $args, qw<limit offset>);
     $writer->endTag('getTransactionListForCustomerRequest');
+    $writer->end;
+
+    return $self->_send($xml);
+}
+
+sub getUnsettledTransactionListRequest {
+    my $self = shift;
+    my $args = scalar @_ % 2 ? shift : {@_};
+
+    my $xml;
+    my $writer = XML::Writer->new( OUTPUT => \$xml );
+    $writer->startTag( 'getUnsettledTransactionListRequest',
+        xmlns => 'AnetApi/xml/v1/schema/AnetApiSchema.xsd' );
+    $self->_addAuthentication($writer);
+
+    $writer->dataElement( refId => $args->{refId} ) if defined $args->{refId};
+
+    $self->_addHash($writer, 'sorting', $args, qw<orderBy orderDescending>);
+    $self->_addHash($writer, 'paging',  $args, qw<limit offset>);
+    $writer->endTag('getUnsettledTransactionListRequest');
     $writer->end;
 
     return $self->_send($xml);
