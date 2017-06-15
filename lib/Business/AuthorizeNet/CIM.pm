@@ -24,7 +24,11 @@ use XML::Simple 'XMLin';
 
 =head1 DESCRIPTION
 
-Authorize.Net Customer Information Manager (CIM) Web Services API for L<http://developer.authorize.net/api/cim/>, read L<http://www.authorize.net/support/CIM_XML_guide.pdf> for more details.
+Authorize.Net Customer Information Manager (CIM) Web Services API features are described 
+at L<http://developer.authorize.net/api/reference/features/customer_profiles.html>, the API
+reference is at L<http://developer.authorize.net/api/reference/#customer-profiles>.
+Another useful (but deprecated) reference is L<http://www.authorize.net/support/CIM_XML_guide.pdf>, 
+and the reference XML schema is at L<https://api.authorize.net/xml/v1/schema/AnetApiSchema.xsd>.
 
 =head2 METHODS
 
@@ -248,14 +252,9 @@ sub createCustomerProfile {
         }
     }
     $writer->endTag('createCustomerProfileRequest');
+    $writer->end;
 
-    $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
-    print "<!-- $xml -->\n\n" if $self->{debug};
-    my $resp = $self->{ua}->post($self->{url}, Content => $xml, 'Content-Type' => 'text/xml');
-    print "<!-- " . $resp->content . " -->\n\n" if $self->{debug};
-
-    my $d = XMLin($resp->content, SuppressEmpty => '');
-    return $d;
+    return $self->_send($xml);
 }
 
 =pod
@@ -358,14 +357,9 @@ sub createCustomerPaymentProfileRequest {
         $writer->dataElement('validationMode', 'liveMode');
     }
     $writer->endTag('createCustomerPaymentProfileRequest');
+    $writer->end;
 
-    $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
-    print "<!-- $xml -->\n\n" if $self->{debug};
-    my $resp = $self->{ua}->post($self->{url}, Content => $xml, 'Content-Type' => 'text/xml');
-    print "<!-- " . $resp->content . " -->\n\n" if $self->{debug};
-
-    my $d = XMLin($resp->content, SuppressEmpty => '');
-    return $d;
+    return $self->_send($xml);
 }
 
 =pod
@@ -417,14 +411,9 @@ sub createCustomerShippingAddressRequest {
 
     $writer->endTag('address');
     $writer->endTag('createCustomerShippingAddressRequest');
+    $writer->end;
 
-    $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
-    print "<!-- $xml -->\n\n" if $self->{debug};
-    my $resp = $self->{ua}->post($self->{url}, Content => $xml, 'Content-Type' => 'text/xml');
-    print "<!-- " . $resp->content . " -->\n\n" if $self->{debug};
-
-    my $d = XMLin($resp->content, SuppressEmpty => '');
-    return $d;
+    return $self->_send($xml);
 }
 
 =pod
@@ -625,16 +614,9 @@ sub createCustomerProfileTransaction {
         if exists $args->{extraOptions};
 
     $writer->endTag('createCustomerProfileTransactionRequest');
+    $writer->end;
 
-    $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
-    print "<!-- $xml -->\n\n" if $self->{debug};
-    my $resp = $self->{ua}->post($self->{url}, Content => $xml, 'Content-Type' => 'text/xml');
-    print "<!-- " . $resp->content . " -->\n\n" if $self->{debug};
-
-    my $d = XMLin($resp->content, SuppressEmpty => '');
-
-    print "<!-- $xml -->\n\n" if $self->{debug};
-    return $d;
+    return $self->_send($xml);
 }
 
 =pod
@@ -660,13 +642,7 @@ sub deleteCustomerProfile {
     $writer->dataElement('customerProfileId', $customerProfileId);
     $writer->endTag('deleteCustomerProfileRequest');
 
-    $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
-    print "<!-- $xml -->\n\n" if $self->{debug};
-    my $resp = $self->{ua}->post($self->{url}, Content => $xml, 'Content-Type' => 'text/xml');
-    print "<!-- " . $resp->content . " -->\n\n" if $self->{debug};
-
-    my $d = XMLin($resp->content, SuppressEmpty => '');
-    return $d;
+    return $self->_send($xml);
 }
 
 =pod
@@ -692,14 +668,9 @@ sub deleteCustomerPaymentProfileRequest {
     $writer->dataElement('customerProfileId', $customerProfileId);
     $writer->dataElement('customerPaymentProfileId', $customerPaymentProfileId);
     $writer->endTag('deleteCustomerPaymentProfileRequest');
+    $writer->end;
 
-    $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
-    print "<!-- $xml -->\n\n" if $self->{debug};
-    my $resp = $self->{ua}->post($self->{url}, Content => $xml, 'Content-Type' => 'text/xml');
-    print "<!-- " . $resp->content . " -->\n\n" if $self->{debug};
-
-    my $d = XMLin($resp->content, SuppressEmpty => '');
-    return $d;
+    return $self->_send($xml);
 }
 
 =pod
@@ -726,13 +697,7 @@ sub deleteCustomerShippingAddressRequest {
     $writer->dataElement('customerAddressId', $customerAddressId);
     $writer->endTag('deleteCustomerShippingAddressRequest');
 
-    $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
-    print "<!-- $xml -->\n\n" if $self->{debug};
-    my $resp = $self->{ua}->post($self->{url}, Content => $xml, 'Content-Type' => 'text/xml');
-    print "<!-- " . $resp->content . " -->\n\n" if $self->{debug};
-
-    my $d = XMLin($resp->content, SuppressEmpty => '');
-    return $d;
+    return $self->_send($xml);
 }
 
 =pod
@@ -756,13 +721,9 @@ sub getCustomerProfileIds {
     $writer->dataElement('transactionKey', $self->{transactionKey});
     $writer->endTag('merchantAuthentication');
     $writer->endTag('getCustomerProfileIdsRequest');
+    $writer->end;
 
-    $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
-    print "<!-- $xml -->\n\n" if $self->{debug};
-    my $resp = $self->{ua}->post($self->{url}, Content => $xml, 'Content-Type' => 'text/xml');
-    print "<!-- " . $resp->content . " -->\n\n" if $self->{debug};
-
-    my $d = XMLin($resp->content, SuppressEmpty => '');
+    my $d = $self->_send($xml);
 
     return () unless $d->{ids};
 
@@ -796,14 +757,9 @@ sub getCustomerProfile {
     $writer->endTag('merchantAuthentication');
     $writer->dataElement('customerProfileId', $customerProfileId);
     $writer->endTag('getCustomerProfileRequest');
+    $writer->end;
 
-    $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
-    print "<!-- $xml -->\n\n" if $self->{debug};
-    my $resp = $self->{ua}->post($self->{url}, Content => $xml, 'Content-Type' => 'text/xml');
-    print "<!-- " . $resp->content . " -->\n\n" if $self->{debug};
-
-    my $d = XMLin($resp->content, SuppressEmpty => '');
-    return $d;
+    return $self->_send($xml);
 }
 
 =pod
@@ -832,13 +788,7 @@ sub getCustomerPaymentProfileRequest {
     $writer->dataElement('unmaskExpirationDate', 'true') if $unmaskExpirationDate;
     $writer->endTag('getCustomerPaymentProfileRequest');
 
-    $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
-    print "<!-- $xml -->\n\n" if $self->{debug};
-    my $resp = $self->{ua}->post($self->{url}, Content => $xml, 'Content-Type' => 'text/xml');
-    print "<!-- " . $resp->content . " -->\n\n" if $self->{debug};
-
-    my $d = XMLin($resp->content, SuppressEmpty => '');
-    return $d;
+    return $self->_send($xml);
 }
 
 =pod
@@ -864,14 +814,9 @@ sub getCustomerShippingAddressRequest {
     $writer->dataElement('customerProfileId', $customerProfileId);
     $writer->dataElement('customerAddressId', $customerAddressId);
     $writer->endTag('getCustomerShippingAddressRequest');
+    $writer->end;
 
-    $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
-    print "<!-- $xml -->\n\n" if $self->{debug};
-    my $resp = $self->{ua}->post($self->{url}, Content => $xml, 'Content-Type' => 'text/xml');
-    print "<!-- " . $resp->content . " -->\n\n" if $self->{debug};
-
-    my $d = XMLin($resp->content, SuppressEmpty => '');
-    return $d;
+    return $self->_send($xml);
 }
 
 =pod
@@ -923,14 +868,9 @@ sub getHostedProfilePageRequest {
     }
 
     $writer->endTag('getHostedProfilePageRequest');
+    $writer->end;
 
-    $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
-    print "<!-- $xml -->\n\n" if $self->{debug};
-    my $resp = $self->{ua}->post($self->{url}, Content => $xml, 'Content-Type' => 'text/xml');
-    print "<!-- " . $resp->content . " -->\n\n" if $self->{debug};
-
-    my $d = XMLin($resp->content, SuppressEmpty => '');
-    return $d;
+    return $self->_send($xml);
 }
 
 =pod
@@ -971,14 +911,9 @@ sub updateCustomerProfile {
     $writer->dataElement('customerProfileId', $args->{customerProfileId});
     $writer->endTag('profile');
     $writer->endTag('updateCustomerProfileRequest');
+    $writer->end;
 
-    $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
-    print "<!-- $xml -->\n\n" if $self->{debug};
-    my $resp = $self->{ua}->post($self->{url}, Content => $xml, 'Content-Type' => 'text/xml');
-    print "<!-- " . $resp->content . " -->\n\n" if $self->{debug};
-
-    my $d = XMLin($resp->content, SuppressEmpty => '');
-    return $d;
+    return $self->_send($xml);
 }
 
 =pod
@@ -1084,14 +1019,9 @@ sub updateCustomerPaymentProfile {
         $writer->dataElement('validationMode', 'liveMode');
     }
     $writer->endTag('updateCustomerPaymentProfileRequest');
+    $writer->end;
 
-    $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
-    print "<!-- $xml -->\n\n" if $self->{debug};
-    my $resp = $self->{ua}->post($self->{url}, Content => $xml, 'Content-Type' => 'text/xml');
-    print "<!-- " . $resp->content . " -->\n\n" if $self->{debug};
-
-    my $d = XMLin($resp->content, SuppressEmpty => '');
-    return $d;
+    return $self->_send($xml);
 }
 
 =pod
@@ -1147,14 +1077,9 @@ sub updateCustomerShippingAddress {
     $writer->endTag('address');
 
     $writer->endTag('updateCustomerShippingAddressRequest');
+    $writer->end;
 
-    $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
-    print "<!-- $xml -->\n\n" if $self->{debug};
-    my $resp = $self->{ua}->post($self->{url}, Content => $xml, 'Content-Type' => 'text/xml');
-    print "<!-- " . $resp->content . " -->\n\n" if $self->{debug};
-
-    my $d = XMLin($resp->content, SuppressEmpty => '');
-    return $d;
+    return $self->_send($xml);
 }
 
 =pod
@@ -1181,14 +1106,9 @@ sub updateSplitTenderGroupRequest {
     $writer->dataElement('splitTenderId', $splitTenderId);
     $writer->dataElement('splitTenderStatus', $splitTenderStatus);
     $writer->endTag('updateSplitTenderGroupRequest');
+    $writer->end;
 
-    $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
-    print "<!-- $xml -->\n\n" if $self->{debug};
-    my $resp = $self->{ua}->post($self->{url}, Content => $xml, 'Content-Type' => 'text/xml');
-    print "<!-- " . $resp->content . " -->\n\n" if $self->{debug};
-
-    my $d = XMLin($resp->content, SuppressEmpty => '');
-    return $d;
+    return $self->_send($xml);
 }
 
 =pod
@@ -1229,13 +1149,252 @@ sub validateCustomerPaymentProfile {
         $writer->dataElement('validationMode', 'liveMode');
     }
     $writer->endTag('validateCustomerPaymentProfileRequest');
+    $writer->end;
+
+    return $self->_send($xml);
+}
+
+=head2 Transaction Reporting
+
+Authorize.Net has a section of the CIM API for reporting on transactions.
+This section of the API must be enabled for the merchant in the portal.
+
+  http://developer.authorize.net/api/reference/features/transaction_reporting.html
+  https://developer.authorize.net/api/reference/index.html#transaction-reporting
+
+=head3 Paging and Sorting Options
+
+API methods that return lists are paged, and the default page size is
+the maximum (1000 records).  However, sorting and paging options can be 
+provided, as described in Authorize.Net's api documentation.  Sorting 
+and paging can be independently provided, but each requires that both 
+its key-value pairs be specified.
+
+  sorting => { orderBy => 'id', orderDescending => 'false' },
+  paging  => { limit => 100, offset => 1 },
+
+N.B. offsets begin at 1.
+
+=head3 getMerchantDetailsRequest 
+
+returns details about the merchant (payment methods, currencies, et al).
+
+  https://developer.authorize.net/api/reference/index.html#transaction-reporting-get-merchant-details
+
+    my $resp = $cim->getMerchantDetailsRequest;
+
+=head3 getTransactionDetailsRequest
+
+Return details about a specific transaction: status, payment method, auth and settled amounts, 
+settle date, profile ids, et al.  transId is required.
+
+  https://developer.authorize.net/api/reference/index.html#transaction-reporting-get-transaction-details
+
+    my $resp = $cim->getTransactionDetailsRequest(
+        transId => $transId,
+        refId   => $refId,    # Optional
+    );
+
+=head3 getTransactionListForCustomerRequest
+
+Get transactions for a specific customer profile or customer payment profile.
+customerProfileId is required.  If the payment profile id is omitted, 
+transactions for all payment profiles belonging to that customer are returned.
+Paging and sorting options can be specified.
+
+    my $resp = $cim->getTransactionListForCustomerRequest(
+        customerProfileId        => $customerProfileId,
+        customerPaymentProfileId => $customerPaymentProfileId,  # Optional
+
+        refId   => $refId,    # Optional
+    );
+
+=head3 getUnsettledTransactionListRequest 
+
+Get data for unsettled transactions.  No parameters are required.
+Paging and sorting options can be specified.
+
+    my $resp = $cim->getUnsettledTransactionListRequest(
+        refId   => $refId,    # Optional
+    );
+
+=head3 getSettledBatchListRequest
+
+returns Batch ID, Settlement Time, & Settlement State for all settled batches with 
+a range of dates. If you specify includeStatistics, you also receive batch 
+statistics by payment type and batch totals.  All inputs are optional.
+
+    my $resp = $cim->getSettledBatchListRequest(
+        includeStatistics => 'true',                   # Optional
+        firstSettlementDate => '2010-09-21T16:00:00',  # Optional
+        lastSettlementDate  => '2010-10-01T00:00:00',  # Optional
+    );
+
+=head3 getTransactionListRequest
+
+Returns data for transactions in a specified batch.  batchId is required input.
+Paging and sorting options can be specified.
+
+    my $resp = $cim->getTransactionListRequest(
+        batchId => $batchId,
+        refId   => $refId,    # Optional
+    );
+
+=cut
+
+sub getMerchantDetailsRequest {
+    my $self = shift;
+    my $args = scalar @_ % 2 ? shift : {@_};
+
+    my $xml;
+    my $writer = XML::Writer->new( OUTPUT => \$xml );
+    $writer->startTag( 'getMerchantDetailsRequest',
+        xmlns => 'AnetApi/xml/v1/schema/AnetApiSchema.xsd' );
+    $self->_addAuthentication($writer);
+    $writer->endTag('getMerchantDetailsRequest');
+    $writer->end;
+
+    return $self->_send($xml);
+}
+
+sub getTransactionDetailsRequest {
+    my $self = shift;
+    my $args = scalar @_ % 2 ? shift : {@_};
+
+    my $xml;
+    my $writer = XML::Writer->new( OUTPUT => \$xml );
+    $writer->startTag( 'getTransactionDetailsRequest',
+        xmlns => 'AnetApi/xml/v1/schema/AnetApiSchema.xsd' );
+    $self->_addAuthentication($writer);
+
+    $writer->dataElement( refId   => $args->{refId} ) if defined $args->{refId};
+    $writer->dataElement( transId => $args->{transId} );
+
+    $writer->endTag('getTransactionDetailsRequest');
+    $writer->end;
+
+    return $self->_send($xml);
+}
+
+sub getTransactionListForCustomerRequest {
+    my $self = shift;
+    my $args = scalar @_ % 2 ? shift : {@_};
+
+    my $xml;
+    my $writer = XML::Writer->new( OUTPUT => \$xml );
+    $writer->startTag( 'getTransactionListForCustomerRequest',
+        xmlns => 'AnetApi/xml/v1/schema/AnetApiSchema.xsd' );
+    $self->_addAuthentication($writer);
+
+    $writer->dataElement( refId => $args->{refId} ) if defined $args->{refId};
+    $writer->dataElement( customerProfileId => $args->{customerProfileId} );
+    $writer->dataElement( customerPaymentProfileId => $args->{customerPaymentProfileId } )
+        if $args->{customerPaymentProfileId};
+
+    $self->_addHash($writer, 'sorting', $args, qw<orderBy orderDescending>);
+    $self->_addHash($writer, 'paging',  $args, qw<limit offset>);
+    $writer->endTag('getTransactionListForCustomerRequest');
+    $writer->end;
+
+    return $self->_send($xml);
+}
+
+sub getUnsettledTransactionListRequest {
+    my $self = shift;
+    my $args = scalar @_ % 2 ? shift : {@_};
+
+    my $xml;
+    my $writer = XML::Writer->new( OUTPUT => \$xml );
+    $writer->startTag( 'getUnsettledTransactionListRequest',
+        xmlns => 'AnetApi/xml/v1/schema/AnetApiSchema.xsd' );
+    $self->_addAuthentication($writer);
+
+    $writer->dataElement( refId => $args->{refId} ) if defined $args->{refId};
+
+    $self->_addHash($writer, 'sorting', $args, qw<orderBy orderDescending>);
+    $self->_addHash($writer, 'paging',  $args, qw<limit offset>);
+    $writer->endTag('getUnsettledTransactionListRequest');
+    $writer->end;
+
+    return $self->_send($xml);
+}
+
+sub getSettledBatchListRequest {
+    my $self = shift;
+    my $args = scalar @_ % 2 ? shift : {@_};
+
+    my $xml;
+    my $writer = XML::Writer->new( OUTPUT => \$xml );
+    $writer->startTag( 'getSettledBatchListRequest',
+        xmlns => 'AnetApi/xml/v1/schema/AnetApiSchema.xsd' );
+    $self->_addAuthentication($writer);
+
+    $writer->dataElement( refId => $args->{refId} ) if defined $args->{refId};
+    $writer->dataElement( includeStatistics => $args->{includeStatistics} )
+        if defined $args->{includeStatistics};
+    $writer->dataElement( firstSettlementDate => $args->{firstSettlementDate} )
+        if defined $args->{firstSettlementDate};
+    $writer->dataElement( lastSettlementDate => $args->{lastSettlementDate} )
+        if defined $args->{lastSettlementDate};
+
+    $writer->endTag('getSettledBatchListRequest');
+    $writer->end;
+
+    return $self->_send($xml);
+}
+
+sub getTransactionListRequest {
+    my $self = shift;
+    my $args = scalar @_ % 2 ? shift : {@_};
+
+    my $xml;
+    my $writer = XML::Writer->new( OUTPUT => \$xml );
+    $writer->startTag( 'getTransactionListRequest',
+        xmlns => 'AnetApi/xml/v1/schema/AnetApiSchema.xsd' );
+    $self->_addAuthentication($writer);
+
+    $writer->dataElement( refId   => $args->{refId} ) if defined $args->{refId};
+    $writer->dataElement( batchId => $args->{batchId} );
+
+    $self->_addHash($writer, 'sorting', $args, qw<orderBy orderDescending>);
+    $self->_addHash($writer, 'paging',  $args, qw<limit offset>);
+    $writer->endTag('getTransactionListRequest');
+    $writer->end;
+
+    return $self->_send($xml);
+}
+
+
+sub _addAuthentication {
+    my ($self, $writer) = @_;
+    $writer->startTag('merchantAuthentication');
+    $writer->dataElement( name =>           $self->{login} );
+    $writer->dataElement( transactionKey => $self->{transactionKey} );
+    $writer->endTag('merchantAuthentication');
+}
+
+sub _addHash {
+    my ($self, $writer, $tagname, $argsref, @selectedkeys) = @_;
+    return unless my $hash = $argsref->{$tagname};
+    @selectedkeys = keys %$hash unless @selectedkeys;
+
+    $writer->startTag($tagname);
+    foreach my $k (@selectedkeys) {
+        $writer->dataElement($k => $hash->{$k}) if defined $hash->{$k};
+    }
+    $writer->endTag($tagname);
+}
+
+sub _send {
+    my ($self, $xml) = @_;
 
     $xml = '<?xml version="1.0" encoding="utf-8"?>' . "\n" . $xml;
     print "<!-- $xml -->\n\n" if $self->{debug};
-    my $resp = $self->{ua}->post($self->{url}, Content => $xml, 'Content-Type' => 'text/xml');
+    my $resp = $self->{ua}
+      ->post( $self->{url}, Content => $xml, 'Content-Type' => 'text/xml' );
     print "<!-- " . $resp->content . " -->\n\n" if $self->{debug};
 
-    my $d = XMLin($resp->content, SuppressEmpty => '');
+    my $d = XMLin( $resp->content, SuppressEmpty => '' );
     return $d;
 }
 
