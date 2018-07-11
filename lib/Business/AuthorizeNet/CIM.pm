@@ -766,15 +766,18 @@ sub getCustomerProfile {
 
 =head3 getCustomerPaymentProfileRequest
 
-Retrieve a customer payment profile for an existing customer profile. $unmaskExpirationDate is an optional boolean arg, if passed
-a true value it will return the expiration date in YYYY-MM format, else it will mask as XXXX.
+Retrieve a customer payment profile for an existing customer profile. Optionally, a hash
+reference of additonal arguments may be passed in, and will be added to the request.
 
-    $cim->getCustomerPaymentProfileRequest($customerProfileId, $customerPaymentProfileId, $unmaskExpirationDate);
+    $cim->getCustomerPaymentProfileRequest($customerProfileId, $customerPaymentProfileId, {
+        includeIssuerInfo    => 'true',
+        unmaskExpirationDate => 'true',
+    });
 
 =cut
 
 sub getCustomerPaymentProfileRequest {
-    my ($self, $customerProfileId, $customerPaymentProfileId, $unmaskExpirationDate) = @_;
+    my ($self, $customerProfileId, $customerPaymentProfileId, $args) = @_;
 
     my $xml;
     my $writer = XML::Writer->new(OUTPUT => \$xml);
@@ -785,7 +788,11 @@ sub getCustomerPaymentProfileRequest {
     $writer->endTag('merchantAuthentication');
     $writer->dataElement('customerProfileId', $customerProfileId);
     $writer->dataElement('customerPaymentProfileId', $customerPaymentProfileId);
-    $writer->dataElement('unmaskExpirationDate', 'true') if $unmaskExpirationDate;
+    if ($args) {
+        for my $dataElement (keys %$args) {
+            $writer->dataElement($dataElement, $args->{$dataElement});
+        }
+    }
     $writer->endTag('getCustomerPaymentProfileRequest');
 
     return $self->_send($xml);
