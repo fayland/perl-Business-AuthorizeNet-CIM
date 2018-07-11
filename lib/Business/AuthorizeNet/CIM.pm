@@ -793,7 +793,7 @@ sub getCustomerPaymentProfileRequest {
         # we want to act as though we were passed the legacy boolean flag for setting
         # 'unmaskExpirationDate' directly.
         if (ref($args) eq 'HASH') {
-            for my $dataElement (keys %$args) {
+            for my $dataElement (grep {exists $args->{$_}} qw(unmaskExpirationDate includeIssuerInfo)) {
                 $writer->dataElement($dataElement, $args->{$dataElement});
             }
         }
