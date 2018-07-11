@@ -789,8 +789,16 @@ sub getCustomerPaymentProfileRequest {
     $writer->dataElement('customerProfileId', $customerProfileId);
     $writer->dataElement('customerPaymentProfileId', $customerPaymentProfileId);
     if ($args) {
-        for my $dataElement (keys %$args) {
-            $writer->dataElement($dataElement, $args->{$dataElement});
+        # for backwards compatability, if a true non-hash value is passed through
+        # we want to act as though we were passed the legacy boolean flag for setting
+        # 'unmaskExpirationDate' directly.
+        if (ref($args) eq 'HASH') {
+            for my $dataElement (keys %$args) {
+                $writer->dataElement($dataElement, $args->{$dataElement});
+            }
+        }
+        else {
+            $writer->dataElement('unmaskExpirationDate', 'true');
         }
     }
     $writer->endTag('getCustomerPaymentProfileRequest');
