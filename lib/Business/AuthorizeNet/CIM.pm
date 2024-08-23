@@ -141,6 +141,16 @@ customer shipping addresses for the customer profile.
             bankName   => $bankName, # Optional
         },
 
+        # opaqueData is required when using the Authorize.Net's Accept.js approach.
+        # Note: Testing so far has indicatated that for new customer profiles using opaqueData,
+        #       the "billTo" section has been required to be present or a "bank validation error"
+        #       has been thrown. This same behavior has not been noticed when creating an empty
+        #       customer profile and then adding a payment profile to it.
+        opaqueData => {
+            dataDescriptor => $dataDescriptor, # Required, for Accept.js use COMMON.ACCEPT.INAPP.PAYMENT, see documentation for others
+            dataValue      => $dataValue, # Required, a one-time base64 encoded, encrypted payment data
+        },
+
         shipToList => {
             firstName => $firstName,
             lastName  => $lastName,
@@ -166,6 +176,7 @@ sub _need_payment_profiles_section {
     return exists $args->{billTo}
         || exists $args->{creditCard}
         || exists $args->{bankAccount}
+        || exists $args->{opaqueData}
         || ( $args->{use_shipToList_as_billTo} and $args->{shipToList} );
 }
 
@@ -223,6 +234,13 @@ sub createCustomerProfile {
                 $writer->dataElement($k, $args->{bankAccount}->{$k});
             }
             $writer->endTag('bankAccount');
+        }
+        if (exists $args->{opaqueData}) {
+            $writer->startTag('opaqueData');
+            foreach my $k (qw/dataDescriptor dataValue/) {
+                $writer->dataElement($k, $args->{opaqueData}->{$k});
+            }
+            $writer->endTag('opaqueData');
         }
 
         $writer->endTag('payment');
@@ -295,6 +313,11 @@ Create a new customer payment profile for an existing customer profile. You can 
             echeckType => $echeckType, # Optionaal, one of CCD, PPD, TEL, WEB
             bankName   => $bankName, # Optional
         },
+
+        opaqueData => { # required when using the Authorize.Net's Accept.js approach.
+            dataDescriptor => $dataDescriptor, # Required, for Accept.js use COMMON.ACCEPT.INAPP.PAYMENT, see documentation for others
+            dataValue      => $dataValue, # Required, a one-time base64 encoded, encrypted payment data
+        },
     );
 
 =cut
@@ -342,6 +365,13 @@ sub createCustomerPaymentProfileRequest {
             $writer->dataElement($k, $args->{bankAccount}->{$k});
         }
         $writer->endTag('bankAccount');
+    }
+    if (exists $args->{opaqueData}) {
+        $writer->startTag('opaqueData');
+        foreach my $k (qw/dataDescriptor dataValue/) {
+            $writer->dataElement($k, $args->{opaqueData}->{$k});
+        }
+        $writer->endTag('opaqueData');
     }
 
     $writer->endTag('payment');
@@ -970,6 +1000,10 @@ Update a customer payment profile for an existing customer profile.
             echeckType => $echeckType, # Optionaal, one of CCD, PPD, TEL, WEB
             bankName   => $bankName, # Optional
         },
+        opaqueData => { # required when using the Authorize.Net's Accept.js approach.
+            dataDescriptor => $dataDescriptor, # Required, for Accept.js use COMMON.ACCEPT.INAPP.PAYMENT, see documentation for others
+            dataValue      => $dataValue, # Required, a one-time base64 encoded, encrypted payment data
+        },
     );
 
 =cut
@@ -1018,6 +1052,13 @@ sub updateCustomerPaymentProfile {
             $writer->dataElement($k, $args->{bankAccount}->{$k});
         }
         $writer->endTag('bankAccount');
+    }
+    if (exists $args->{opaqueData}) {
+        $writer->startTag('opaqueData');
+        foreach my $k (qw/dataDescriptor dataValue/) {
+            $writer->dataElement($k, $args->{opaqueData}->{$k});
+        }
+        $writer->endTag('opaqueData');
     }
 
     $writer->endTag('payment');
